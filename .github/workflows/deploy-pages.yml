@@ -1,6 +1,8 @@
 # Builds the static export and publishes it to GitHub Pages on every push to
-# main. The base path is derived from the repo name, so forks/clones of this
-# prototype (e.g. the v2 repo) deploy correctly without edits.
+# main. The base path comes from the Pages site itself: a project site on
+# github.io lives under "/<repo-name>", while a private/org Pages site is
+# served from the root of its own host. So forks, clones and moves of this
+# prototype all deploy correctly without edits.
 name: Deploy to GitHub Pages
 
 on:
@@ -20,8 +22,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -29,12 +29,16 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm build
-      - uses: actions/configure-pages@v5
+      - id: pages
+        uses: actions/configure-pages@v5
         with:
           # Turns Pages on for the repo the first time this runs.
           enablement: true
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+        env:
+          # Empty when the site is served from a host root.
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: out
