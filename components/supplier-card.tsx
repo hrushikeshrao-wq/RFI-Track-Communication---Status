@@ -160,7 +160,7 @@ export function SupplierCard({
                 ? `${supplier.name} is recommended for you — remove from selected suppliers`
                 : added
                   ? `${supplier.name} added to selected suppliers`
-                  : `Contact ${supplier.name} — add to Quick Contact Suppliers`
+                  : `Add ${supplier.name} to the contact list`
             }
             onClick={onToggleAdd}
           >
@@ -171,7 +171,7 @@ export function SupplierCard({
                 buyer to read the label (it previously reused the same
                 checkmark as Added to List). */}
             <l-icon name={recommended ? "sparkles" : added ? "check" : "plus"} fill={recommended} />{" "}
-            {recommended ? "Recommended" : added ? "Added to List" : "Contact Supplier"}
+            {recommended ? "Recommended" : added ? "Added to List" : "Add to Contact List"}
           </button>
           </span>
           <button kind="primary" scale="small" className="card-cta" onClick={noop}>
