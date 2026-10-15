@@ -1,3 +1,17 @@
+# Shareable links
+
+These links are for the `right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi` branch. They stay separate from the official `main` prototype.
+
+| | |
+| --- | --- |
+| **Prototype for stakeholders** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/ |
+| **This branch** | https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/tree/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
+| **Open a pull request** | https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/pull/new/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
+| **Public prototype repo** | https://github.com/hrushikeshrao-wq/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
+| **Local preview** | http://127.0.0.1:9999/ |
+
+The same list is kept in [SHAREABLE-LINKS.md](./SHAREABLE-LINKS.md).
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
