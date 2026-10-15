@@ -1,12 +1,15 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AskBlock } from "@/components/ask-block";
 import { DeepDrawGate } from "@/components/deep-draw-gate";
+import { FloatingShortlist } from "@/components/floating-shortlist";
 import { PaneResizer } from "@/components/pane-resizer";
 import { SiteNavbar } from "@/components/site-navbar";
-import { SupplierResults } from "@/components/supplier-results";
+import { SourcingProvider } from "@/components/sourcing-context";
 import { ThinkingIndicator } from "@/components/thinking-indicator";
+import { useShortlistState } from "@/components/use-shortlist-state";
 import {
   FREE_TEXT_ENABLED,
   askForQuestion,
@@ -28,6 +31,7 @@ import {
 } from "@/lib/simulation";
 import { syncableQuestionIds } from "@/lib/filter-sync";
 import { CATEGORY_LABEL } from "@/lib/suppliers";
+import { clearShortlistStore, type ShortlistSnapshot } from "@/lib/shortlist-store";
 
 const OPT_OUT_HINT =
   "Opt out of the Thomas Agent experience and go back to Thomas Classic sourcing";
@@ -76,7 +80,7 @@ function makeIntro(): TranscriptEntry[] {
   return ask ? [{ kind: "ask", id: nextId(), ask, status: "active" }] : [];
 }
 
-export function SourcingExperience() {
+export function SourcingExperience({ children }: { children: React.ReactNode }) {
   const [transcript, setTranscript] = useState<TranscriptEntry[]>(() => makeIntro());
   const [answers, setAnswers] = useState<LoggedAnswer[]>([]);
   // The category search that landed the buyer here — the experience's starting point.
@@ -508,6 +512,7 @@ export function SourcingExperience() {
   const reset = useCallback(() => {
     timers.current.forEach(clearTimeout);
     timers.current = [];
+    clearShortlistStore();
     setTranscript(makeIntro());
     setAnswers([]);
     setQuery(CATEGORY_LABEL);
@@ -518,6 +523,29 @@ export function SourcingExperience() {
     setAgentOpen(true);
     setRunId((id) => id + 1);
   }, []);
+
+  const restoreSearch = useCallback((snapshot: ShortlistSnapshot) => {
+    setAnswers(snapshot.answers);
+    setQuery(snapshot.query);
+  }, []);
+
+  const shortlist = useShortlistState(answers, query, runId, restoreSearch);
+  const pathname = usePathname();
+  const isProfile = pathname.startsWith("/supplier/");
+
+  const sourcing = useMemo(
+    () => ({
+      answers,
+      query,
+      runId,
+      removeAnswer,
+      applyFilterAnswer,
+      clearMappedAnswers: () => removeAnswers(syncableQuestionIds()),
+      openDefine,
+      ...shortlist,
+    }),
+    [answers, query, runId, removeAnswer, applyFilterAnswer, removeAnswers, openDefine, shortlist],
+  );
 
   const activeAsk = transcript.find(
     (entry): entry is Extract<TranscriptEntry, { kind: "ask" }> =>
@@ -596,6 +624,7 @@ export function SourcingExperience() {
   }
 
   return (
+    <SourcingProvider value={sourcing}>
     <div className="app-shell">
       <DeepDrawGate
         open={deepDrawGateOpen}
@@ -622,8 +651,10 @@ export function SourcingExperience() {
         className="app-main"
         data-agent-closed={!agentOpen || undefined}
         data-mobile-tab={mobileTab}
+        data-profile={isProfile || undefined}
       >
-        {/* Left: define your need */}
+        {/* Left: define your need. Hidden on a company profile tab. */}
+        {!isProfile && (
         <section className="pane pane-left" aria-label="Define your need" hidden={!agentOpen}>
           <div className="agent-card">
             <div className="agent-body" ref={scrollRef}>
@@ -632,8 +663,10 @@ export function SourcingExperience() {
                 <l-icon name="sparkles" fill />
               </span>
               <div className="agent-header-copy flex-1">
-                <h4 className="mar-0">Smart filter your search</h4>
-                <p className="agent-searching mar-0">Find the perfect supplier</p>
+                <h4 className="mar-0">Intelligently refine your search</h4>
+                <p className="agent-searching mar-0">
+                  Answer questions to match with the right supplier for your need
+                </p>
               </div>
             </div>
             <div className="transcript" data-browse={browseAsks || undefined}>
@@ -692,36 +725,28 @@ export function SourcingExperience() {
                     <l-panel key={entry.id}>
                       <div className="done-card">
                         <span className="done-mark">
-                          <ThinkingIndicator state="done" size={28} />
-                          <span className="done-check" aria-hidden="true">
-                            <l-icon name="check" />
-                          </span>
+                          <ThinkingIndicator state="done" size={26} />
                         </span>
-                        <h3 className="done-title mar-0">
-                          {entry.routed ? (
-                            "This need is quoted by Deep Drawing Services"
-                          ) : (
-                            <>
-                              Based on your inputs we&apos;ve matched you to{" "}
-                              <span className="txt-blue-100">{entry.shortlist ?? 0}</span> suppliers.
-                            </>
-                          )}
-                        </h3>
-                        <p className="mar-0 done-copy">
-                          {entry.routed
-                            ? entry.text
-                            : `You can restart your search any time or close the agent below.${
-                                FREE_TEXT_ENABLED
-                                  ? " You can also keep typing details like certifications, industry, or supplier location."
-                                  : ""
-                              }`}
-                        </p>
+                        {entry.routed ? (
+                          <>
+                            <h3 className="done-title mar-0">
+                              This need is quoted by Deep Drawing Services
+                            </h3>
+                            <p className="mar-0 done-copy">{entry.text}</p>
+                          </>
+                        ) : (
+                          <div className="done-message">
+                            <h3 className="done-title done-matched mar-0">20 Suppliers Matched!</h3>
+                            <p className="mar-0 done-copy">Curated from your inputs.</p>
+                          </div>
+                        )}
                         <div className="done-actions">
-                          <button kind="neutral" onClick={reset}>
-                            <l-icon name="arrow-rotate-left" /> Restart search
+                          <button kind="neutral" className="done-restart" onClick={reset}>
+                            <l-icon name="arrow-rotate-left" aria-hidden="true" />
+                            <span>Restart search</span>
                           </button>
-                          <button kind="primary" onClick={() => setAgentOpen(false)}>
-                            Close Smart Filters
+                          <button kind="primary" className="done-close" onClick={() => setAgentOpen(false)}>
+                            Close agent
                           </button>
                         </div>
                       </div>
@@ -828,20 +853,15 @@ export function SourcingExperience() {
             )}
           </div>
         </section>
+        )}
 
-        <PaneResizer variable="--define-width" edge="left" label="Resize the define column" />
+        {!isProfile && (
+          <PaneResizer variable="--define-width" edge="left" label="Resize the define column" />
+        )}
 
-        {/* Center + right: supplier results and the engage rail */}
+        {/* Center: supplier results, or a company profile when one is open. */}
         <section className="pane" aria-label="Supplier results">
-          <SupplierResults
-            answers={answers}
-            query={query}
-            onRemoveAnswer={removeAnswer}
-            onApplyFilterAnswer={applyFilterAnswer}
-            onClearMappedAnswers={() => removeAnswers(syncableQuestionIds())}
-            onRefine={openDefine}
-            runId={runId}
-          />
+          {children}
         </section>
 
         {!agentOpen && (
@@ -889,6 +909,11 @@ export function SourcingExperience() {
           </button>
         )}
       </main>
+      <button type="button" className="phone-refine" onClick={openDefine}>
+        <l-icon name="sparkles" fill aria-hidden="true" /> Refine
+      </button>
+      <FloatingShortlist />
     </div>
+    </SourcingProvider>
   );
 }

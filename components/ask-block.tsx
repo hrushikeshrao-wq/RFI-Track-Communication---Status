@@ -223,7 +223,7 @@ export function AskBlock({
       aria-label={`Change your answer to ${question.title}`}
       onClick={onEdit}
     >
-      Edit
+      <l-icon name="pen" aria-hidden="true" />
     </button>
   ) : null;
 
@@ -267,7 +267,9 @@ export function AskBlock({
           }
         >
           {answer && answer.length > 0 && status !== "skipped" && (
-            <l-icon name="check" aria-hidden="true" />
+            <span className="ask-answer-check" aria-hidden="true">
+              <l-icon name="check" />
+            </span>
           )}
           {settledLabel ?? "Skipped"}
           {edit}

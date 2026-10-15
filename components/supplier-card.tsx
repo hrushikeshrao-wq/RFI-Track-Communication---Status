@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 import { SupplierLogo } from "@/components/supplier-logo";
 import { BASE_PATH } from "@/lib/base-path";
@@ -122,9 +123,14 @@ export function SupplierCard({
         </div>
         <div className="card-identity flex-1">
           <div className="flex align-items-center gap-2">
-            <a href="#" className="card-title" onClick={noop}>
+            <Link
+              href={`/supplier/${supplier.id}/`}
+              className="card-title"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               {supplier.name}
-            </a>
+            </Link>
             {supplier.verified && (
               <Image
                 src={`${BASE_PATH}/verified-badge.png`}
@@ -135,9 +141,14 @@ export function SupplierCard({
               />
             )}
           </div>
-          <a href="#" className="card-profile-link" onClick={noop}>
+          <Link
+            href={`/supplier/${supplier.id}/`}
+            className="card-profile-link"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             View Profile
-          </a>
+          </Link>
         </div>
         <div className="card-actions flex align-items-center gap-2 flex-shrink-0">
           {/* The wrapper carries the hover note: a disabled button can't
@@ -157,7 +168,7 @@ export function SupplierCard({
               recommended
                 ? `${supplier.name} is recommended for you — remove from selected suppliers`
                 : added
-                  ? `${supplier.name} added to selected suppliers`
+                  ? `Remove ${supplier.name} from selected suppliers`
                   : `Add ${supplier.name} to selected suppliers`
             }
             onClick={onToggleAdd}

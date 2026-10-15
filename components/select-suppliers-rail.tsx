@@ -30,6 +30,8 @@ type SelectSuppliersRailProps = {
   addedCount: number;
   /** Takes every recommendation off the rail at once. */
   onClearRecommended: () => void;
+  /** Collapse the floating panel. Omitted when the rail is not floating. */
+  onCollapse?: () => void;
 };
 
 /**
@@ -47,6 +49,7 @@ export function SelectSuppliersRail({
   requirementPreview,
   addedCount,
   onClearRecommended,
+  onCollapse,
 }: SelectSuppliersRailProps) {
   const [rfiCollapsed, setRfiCollapsed] = useState(false);
   /** Saved suppliers a request can actually go to — the rest are shortlist only. */
@@ -112,6 +115,16 @@ export function SelectSuppliersRail({
                 )}
           </p>
         </div>
+        {onCollapse && (
+          <button
+            type="button"
+            className="rail-collapse"
+            aria-label="Collapse shortlist"
+            onClick={onCollapse}
+          >
+            <l-icon name="xmark" aria-hidden="true" />
+          </button>
+        )}
       </div>
 
       {suppliers.length === 0 ? (

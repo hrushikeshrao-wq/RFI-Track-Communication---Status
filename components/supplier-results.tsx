@@ -1,15 +1,10 @@
 "use client";
 
 import { Fragment, useEffect, useMemo, useRef, useState } from "react";
-import { ContactSupplierModal } from "@/components/contact-supplier-modal";
 import { FilterDrawer, type FilterGroup } from "@/components/filter-drawer";
-import { LoginScreen } from "@/components/login-screen";
-import { PaneResizer } from "@/components/pane-resizer";
-import { RegisterGate } from "@/components/register-gate";
-import { SelectSuppliersRail } from "@/components/select-suppliers-rail";
-import { ShortlistModal } from "@/components/shortlist-modal";
+import { useSourcing } from "@/components/sourcing-context";
 import { SupplierCard } from "@/components/supplier-card";
-import { SupplierLogo } from "@/components/supplier-logo";
+import { ThomasLeadAd } from "@/components/thomas-lead-ad";
 import {
   capabilitiesForMaterials,
   certificationsForAnswers,
@@ -21,37 +16,13 @@ import {
   questionById,
   candidatesFor,
   LOCATION_QUESTION_ID,
-  matchSetFor,
-  railTarget,
   simulatedMatchCount,
-  type LoggedAnswer,
 } from "@/lib/simulation";
-import { planScreening, scoreRecord } from "@/lib/screening";
+import { rankSuppliers } from "@/lib/ranked-suppliers";
 import { matchPillsFor } from "@/lib/match-pills";
-import { RAIL_LIMIT, contactableOnly, type Supplier } from "@/lib/suppliers";
+import type { Supplier } from "@/lib/suppliers";
 
 const PAGE_SIZE = 25;
-/** How many ranked suppliers land on the rail when the questionnaire wraps up. */
-/** Recommendations always on the rail, re-ranked as answers land. */
-const RECOMMENDED_COUNT = 5;
-
-/** Short spec labels for the RFI draft card's bulleted requirement lines —
-    the questionnaire titles are too long to read as "Label: Value". */
-const RFI_SPEC_LABELS: Record<string, string> = {
-  part: "Product",
-  process: "Process",
-  material: "Material",
-  stock: "Stock",
-  qty: "Quantity",
-  size: "Size",
-  tooling: "Tooling",
-  tol: "Tolerance",
-  loc: "Location",
-  features: "Features",
-  app: "Application",
-  cert: "Certifications",
-  diverse: "Diversity",
-};
 
 /** Short uppercase label shown above each answer chip in the results header. */
 const FACET_LABELS: Record<string, string> = {
@@ -70,41 +41,29 @@ const FACET_LABELS: Record<string, string> = {
   diverse: "DIVERSITY",
 };
 
-type SupplierResultsProps = {
-  answers: LoggedAnswer[];
-  query: string;
-  /** Drops a logged answer when its pill is dismissed. */
-  onRemoveAnswer: (questionId: string) => void;
-  /** Writes a mapped All Filters pick into the agent answers (or clears it). */
-  onApplyFilterAnswer: (questionId: string, values: string[] | null) => void;
-  /** Clears every questionnaire-backed drawer facet in one shot. */
-  onClearMappedAnswers: () => void;
-  /** Reports how many suppliers sit on the engage rail, for the stage bar. */
-  /** Engage tray's Refine control: reopens the define pane. */
-  onRefine: () => void;
-  /** True once the run wraps up or the buyer clicks Done. */
-  /** Increments on Reset so the rail can drop auto-queued chips. */
-  runId: number;
-};
-
 /**
- * The results rail: screening header with live counts, suppliers still
- * matching everything logged so far (best first), and a persistent action
- * footer — select all, contact, shortlist, export, save.
+ * Search results: suppliers still matching the keyword and questionnaire,
+ * best first. The shortlist itself floats over the page.
  */
-export function SupplierResults({
-  answers,
-  query,
-  onRemoveAnswer,
-  onApplyFilterAnswer,
-  onClearMappedAnswers,
-  onRefine,
-  runId,
-}: SupplierResultsProps) {
+export function SupplierResults() {
+  const {
+    answers,
+    query,
+    removeAnswer: onRemoveAnswer,
+    applyFilterAnswer: onApplyFilterAnswer,
+    clearMappedAnswers: onClearMappedAnswers,
+    toggleAdd,
+    recommendedIds,
+    railSuppliers,
+    railFull,
+    pendingRevealId,
+    clearPendingReveal,
+  } = useSourcing();
+  const railIds = useMemo(
+    () => new Set(railSuppliers.map((supplier) => supplier.id)),
+    [railSuppliers],
+  );
   const [page, setPage] = useState(1);
-  /** Shortlisted supplier ids; nothing renders it since the card Save button
-      left, but the rail's "Add to shortlist" still records the picks. */
-  const [, setSaved] = useState<Set<string>>(new Set());
   /** Draft for the drawer location field while typing; commits into answers. */
   const [locationDraft, setLocationDraft] = useState("");
   /** Classic facet rail, opened from "All Filters". */
@@ -113,25 +72,11 @@ export function SupplierResults({
   const [partnerOnly, setPartnerOnly] = useState(false);
   /** Local-only facets (no questionnaire twin) — e.g. company type. */
   const [localFacetPicks, setLocalFacetPicks] = useState<Record<string, string[]>>({});
-  const [contactOpen, setContactOpen] = useState(false);
-  /** Saving a shortlist walks register -> sign in -> pick a list. */
-  const [shortlistStage, setShortlistStage] = useState<
-    null | "register" | "login" | "shortlist"
-  >(null);
-  /** The rail's RFI goes to its pre-picked top suppliers, not the selection. */
-  const [railRfi, setRailRfi] = useState(false);
-  /** Suppliers the buyer added to the rail from card "+ Add" CTAs, in order. */
-  const [railAdded, setRailAdded] = useState<string[]>([]);
-  /** Recommendations the buyer took off the rail; the next match fills in. */
-  const [dismissed, setDismissed] = useState<string[]>([]);
-  /** The buyer cleared the recommendations. Like a single removal, it holds
-      for the whole run — a new answer doesn't bring them back. */
-  const [cleared, setCleared] = useState(false);
-  /** Card currently highlighted after a rail-chip click. */
+  /** Card currently highlighted after a shortlist-chip click. */
   const [focusedSupplierId, setFocusedSupplierId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const locationTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const pendingRevealId = useRef<string | null>(null);
+  const revealTarget = useRef<string | null>(null);
   const [revealNonce, setRevealNonce] = useState(0);
 
   const logged = answers.filter((answer) => !answer.skipped && answer.values.length > 0);
@@ -153,46 +98,19 @@ export function SupplierResults({
     };
   }, []);
 
-  useEffect(() => {
-    setRailAdded([]);
-    setDismissed([]);
-    setCleared(false);
-    setFocusedSupplierId(null);
-  }, [runId]);
-
   /** Suppliers in the category still matching — the number the buyer is shown. */
   const matchTotal = simulatedMatchCount(answers);
 
   // Exact matches rank above any near matches the rail was padded with, so a
   // relaxed answer never pushes a supplier that meets everything down the list.
-  const { exact, near } = useMemo(() => {
-    const set = matchSetFor(answers, railTarget(matchTotal));
-    const plan = planScreening(
-      `${query} ${logged.map((answer) => answer.values.join(" ")).join(" ")}`,
-      [],
-    );
+  const results = useMemo(() => {
     const types = localFacetPicks.companyType ?? [];
-    const passesFacets = (supplier: Supplier) =>
-      (!verifiedOnly || supplier.verified === true) &&
-      (types.length === 0 || types.some((type) => supplier.companyTypes.includes(type)));
-    const rank = (group: Supplier[]) =>
-      group
-        .filter((supplier) => passesFacets(supplier))
-        .sort((a, b) => {
-          const scoreDelta = scoreRecord(b, plan) - scoreRecord(a, plan);
-          if (scoreDelta !== 0) return scoreDelta;
-          if (a.verified !== b.verified) return a.verified ? -1 : 1;
-          if (a.sponsored !== b.sponsored) return a.sponsored ? -1 : 1;
-          return 0;
-        });
-    return {
-      exact: rank(set.matches),
-      near: rank(set.near),
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answers, matchTotal, query, verifiedOnly, localFacetPicks]);
-
-  const results = useMemo(() => [...exact, ...near], [exact, near]);
+    return rankSuppliers(answers, query).filter(
+      (supplier) =>
+        (!verifiedOnly || supplier.verified === true) &&
+        (types.length === 0 || types.some((type) => supplier.companyTypes.includes(type))),
+    );
+  }, [answers, query, verifiedOnly, localFacetPicks]);
 
   // A new answer or filter reshuffles the list, so the buyer starts back on
   // page one rather than stranded past the end of a shorter set.
@@ -325,83 +243,31 @@ export function SupplierResults({
     value: answer.values.join(", "),
   }));
 
-  // Logged answers echoed on the contact modal and the rail RFI card.
-  const requirements = logged.map((answer) => ({
-    label:
-      RFI_SPEC_LABELS[answer.questionId] ??
-      questionById(answer.questionId)?.title ??
-      answer.questionId,
-    value: answer.values.join(", "),
-  }));
-
   const matchPills = matchPillsFor(logged);
 
-  /** The rail's recommendations: the top contactable matches for the answers
-      so far, minus any the buyer dismissed. Derived, so a new answer re-ranks
-      them in place. */
-  // Anything the buyer added by hand is theirs, not a recommendation — even
-  // if the ranking would have picked it — so recommendations fill in around it.
-  const recommended = cleared
-    ? []
-    : contactableOnly(results)
-        .filter((supplier) => !dismissed.includes(supplier.id) && !railAdded.includes(supplier.id))
-        .slice(0, RECOMMENDED_COUNT);
-
-  /** "Clear" on the recommendations: off for the rest of the run. */
-  const clearRecommended = () => setCleared(true);
-  const recommendedIds = new Set(recommended.map((supplier) => supplier.id));
-
-  /** The rail's list: the buyer's own card additions first, then the
-      recommendations beneath them. */
-  const added = railAdded
-    .map((id) => results.find((supplier) => supplier.id === id))
-    .filter((supplier): supplier is Supplier => supplier != null);
-  const railSuppliers = [...added, ...recommended];
-  const railIds = new Set(railSuppliers.map((supplier) => supplier.id));
-  /** Full rail: cards can still take suppliers off, but not put more on. */
-  const railFull = railSuppliers.length >= RAIL_LIMIT;
-
-  const removeFromRail = (supplierId: string) => {
-    // A dismissed recommendation stays off until the run resets; a manual
-    // add just comes off the list.
-    if (recommendedIds.has(supplierId)) {
-      setDismissed((current) => [...current, supplierId]);
-    }
-    setRailAdded((current) => current.filter((id) => id !== supplierId));
-  };
-
-  /** Card "+ Add" CTA: put the supplier on the rail list (or take it back off). */
-  const toggleRailAdd = (supplier: Supplier) => {
-    if (railIds.has(supplier.id)) {
-      removeFromRail(supplier.id);
-      return;
-    }
-    if (railFull) return;
-    // A dismissal stands: re-adding a supplier the buyer took off the
-    // recommendations makes it theirs, under "Added by you".
-    setRailAdded((current) => [...current, supplier.id]);
-  };
-
-  const revealSupplier = (supplierId: string) => {
-    const index = results.findIndex((supplier) => supplier.id === supplierId);
+  useEffect(() => {
+    if (!pendingRevealId) return;
+    const id = pendingRevealId;
+    const index = results.findIndex((supplier) => supplier.id === id);
+    clearPendingReveal();
     if (index < 0) return;
+    revealTarget.current = id;
+    setFocusedSupplierId(id);
     const targetPage = Math.floor(index / PAGE_SIZE) + 1;
-    pendingRevealId.current = supplierId;
-    setFocusedSupplierId(supplierId);
     if (targetPage !== currentPage) {
       setPage(targetPage);
     } else {
       setRevealNonce((nonce) => nonce + 1);
     }
-  };
+  }, [pendingRevealId, results, currentPage, clearPendingReveal]);
 
   useEffect(() => {
-    const id = pendingRevealId.current;
+    const id = revealTarget.current;
     if (!id) return;
     const card = scrollRef.current?.querySelector(`[data-supplier-id="${id}"]`);
     if (!card) return;
     card.scrollIntoView({ behavior: "smooth", block: "start" });
-    pendingRevealId.current = null;
+    revealTarget.current = null;
   }, [page, revealNonce, results]);
 
   useEffect(() => {
@@ -409,42 +275,6 @@ export function SupplierResults({
     const timer = setTimeout(() => setFocusedSupplierId(null), 1600);
     return () => clearTimeout(timer);
   }, [focusedSupplierId]);
-
-  // The engage rail's RFI goes to its own list.
-  /** The request only goes to suppliers Thomas can route to — the rest stay on
-      the rail as shortlist-only entries. */
-  const contactRecipients = railRfi ? contactableOnly(railSuppliers) : [];
-
-  /** Rail primary CTA: RFI addressed to the pre-picked top suppliers. */
-  const openRailRfi = () => {
-    setRailRfi(true);
-    setContactOpen(true);
-  };
-
-  /** Drafted RFI headline: material + process + part type, e.g. "Metal
-      Progressive Die Brackets", falling back to the search query. */
-  const answerValue = (questionId: string) =>
-    logged.find((answer) => answer.questionId === questionId)?.values[0];
-  const draftPieces = [answerValue("material"), answerValue("process")].filter(
-    (value): value is string => value != null,
-  );
-  const draftTitle =
-    draftPieces.length > 0
-      ? [...draftPieces, answerValue("part") ?? "Parts"].join(" ")
-      : query;
-
-  /** Rail secondary CTA: saving a list needs an account, so the register wall
-      comes first and the picker waits on the other side of signing in. */
-  const shortlistRailSuppliers = () => setShortlistStage("register");
-
-  const saveToShortlist = () => {
-    setSaved((set) => {
-      const next = new Set(set);
-      for (const supplier of railSuppliers) next.add(supplier.id);
-      return next;
-    });
-    setShortlistStage(null);
-  };
 
   return (
     <>
@@ -494,6 +324,8 @@ export function SupplierResults({
           </div>
         )}
       </div>
+        <div className="results-stage">
+        <div className="results-main">
         <div className="results-list">
           {results.slice(pageStart, pageStart + PAGE_SIZE).map((supplier) => (
             <Fragment key={supplier.id}>
@@ -510,7 +342,7 @@ export function SupplierResults({
                   added={railIds.has(supplier.id)}
                   recommended={recommendedIds.has(supplier.id)}
                   addDisabled={railFull && !railIds.has(supplier.id)}
-                  onToggleAdd={() => toggleRailAdd(supplier)}
+                  onToggleAdd={() => toggleAdd(supplier)}
                   matchPills={matchPills}
                 />
               </div>
@@ -557,94 +389,13 @@ export function SupplierResults({
             </nav>
           )}
         </div>
+        <RelatedSearches suppliers={results} />
+        </div>
+        <ThomasLeadAd />
+        </div>
       </div>
       </div>
-
-        <PaneResizer variable="--rail-width" edge="right" label="Resize the engage rail" />
-
-        <SelectSuppliersRail
-          suppliers={railSuppliers}
-          onRemove={removeFromRail}
-          onReveal={revealSupplier}
-          onAddToShortlist={shortlistRailSuppliers}
-          onSendRfi={openRailRfi}
-          draftTitle={draftTitle}
-          requirementCount={logged.length}
-          requirementPreview={requirements}
-          addedCount={added.length}
-          onClearRecommended={clearRecommended}
-        />
       </div>
-
-      {/* Tablet and phone: the engage rail collapses into a fixed bottom tray. */}
-      <div className="engage-tray">
-        <button type="button" className="engage-tray-refine" onClick={onRefine}>
-          <l-icon name="sparkles" fill aria-hidden="true" /> Refine
-        </button>
-        {/* Marks and their count share one cell, so the count sits against the
-            logos instead of being pushed out by the button column below. */}
-        <span className="engage-tray-picks">
-          {railSuppliers.length > 0 && (
-            <span className="engage-tray-avatars" aria-hidden="true">
-              {railSuppliers.slice(0, 3).map((supplier) => (
-                <span key={supplier.id}>
-                  <SupplierLogo name={supplier.name} size={26} />
-                </span>
-              ))}
-            </span>
-          )}
-          <span className="engage-tray-note">
-            {railSuppliers.length} supplier{railSuppliers.length === 1 ? "" : "s"} to engage
-          </span>
-        </span>
-        <button
-          kind="neutral"
-          scale="small"
-          type="button"
-          className="engage-tray-shortlist"
-          disabled={railSuppliers.length === 0}
-          onClick={shortlistRailSuppliers}
-        >
-          Shortlist
-        </button>
-        <button
-          kind="primary"
-          scale="small"
-          type="button"
-          disabled={contactableOnly(railSuppliers).length === 0}
-          onClick={openRailRfi}
-        >
-          Send RFI
-        </button>
-      </div>
-
-      <RegisterGate
-        open={shortlistStage === "register"}
-        onClose={() => setShortlistStage(null)}
-        onContinue={() => setShortlistStage("login")}
-      />
-
-      <LoginScreen
-        open={shortlistStage === "login"}
-        onDismiss={() => setShortlistStage("shortlist")}
-      />
-
-      <ShortlistModal
-        open={shortlistStage === "shortlist"}
-        onClose={() => setShortlistStage(null)}
-        supplierCount={railSuppliers.length}
-        onSave={saveToShortlist}
-      />
-
-      <ContactSupplierModal
-        suppliers={contactRecipients}
-        open={contactOpen}
-        onClose={() => {
-          setContactOpen(false);
-          setRailRfi(false);
-        }}
-        requirements={requirements}
-      />
 
       <FilterDrawer
         open={filtersOpen}
@@ -664,5 +415,41 @@ export function SupplierResults({
         onClearAll={clearFilters}
       />
     </>
+  );
+}
+
+const RELATED_LIMIT = 12;
+
+/** Capability terms from the current result set, shown after the list. */
+function RelatedSearches({ suppliers }: { suppliers: Supplier[] }) {
+  const terms = useMemo(() => {
+    const seen = new Set<string>();
+    const next: string[] = [];
+    for (const supplier of suppliers) {
+      for (const capability of supplier.capabilities) {
+        if (seen.has(capability)) continue;
+        seen.add(capability);
+        next.push(capability);
+        if (next.length >= RELATED_LIMIT) return next;
+      }
+    }
+    return next;
+  }, [suppliers]);
+
+  if (terms.length === 0) return null;
+
+  return (
+    <section className="related-searches" aria-label="Related searches">
+      <h2>Related Searches</h2>
+      <ul>
+        {terms.map((term) => (
+          <li key={term}>
+            <a href="#related" onClick={(event) => event.preventDefault()}>
+              {term}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
