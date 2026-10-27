@@ -1984,12 +1984,15 @@ body.is-resizing-panes {
   align-items: center;
   gap: 4px;
   white-space: nowrap;
-  padding: 0 8px;
+  height: 26px;
+  padding: 0 var(--l-space-2) 0 var(--l-space-3);
   border: 1px solid var(--l-color-blue-25, var(--l-color-blue-50, #c6d8f5));
   border-radius: 4px;
   background: var(--l-color-blue-10);
   color: var(--l-color-blue-100);
-  font-size: 11px;
+  /* Same height and type size as Tailoft's <l-chip>, which is what production
+     renders these as. */
+  font-size: var(--l-font-size-smallest);
   font-weight: var(--l-font-weight-semibold);
 }
 
@@ -2007,10 +2010,13 @@ body.is-resizing-panes {
   align-items: center;
   border: none;
   border-radius: 0;
-  padding: 0;
+  align-self: center;
+  height: 14px;
+  padding: 0 0 0 var(--l-space-2);
+  border-left: 1px solid var(--l-color-blue-25, #c3dafb);
   background: none;
   color: inherit;
-  font-size: 11px;
+  font-size: var(--l-font-size-smallest);
   line-height: 1;
   cursor: pointer;
 }
@@ -5718,4 +5724,45 @@ l-icon[name="envelope"]::before {
   .drop-copy-touch {
     display: inline;
   }
+}
+
+/* Multi-select search question: the catalog rows carry a checkbox so the list
+   can stay open between picks; picks reuse .answer-pill above the field. */
+/* Multi-select list sits in the flow under the field, capped at a few rows, so
+   it pushes Next down instead of covering it. */
+.location-entry-field:has(.location-suggest-inline) {
+  display: flex;
+  flex-direction: column;
+}
+
+.location-suggest-inline {
+  order: 2;
+  position: static;
+  margin-top: 6px;
+  max-height: 176px;
+  box-shadow: none;
+}
+
+.location-suggest-row .row-indicator {
+  flex-shrink: 0;
+}
+
+/* The write-in row is an action, not a catalog entry: a rule above it and a
+   plain plus in the checkbox slot, so it reads as "add this" rather than as
+   one more option to tick. */
+.location-suggest-row[data-add] {
+  margin-top: 2px;
+  border-top: 1px solid var(--l-color-border);
+  border-radius: 0 0 6px 6px;
+}
+
+.location-suggest-row .suggest-add-mark l-icon {
+  color: var(--l-color-blue-100);
+}
+
+.suggest-add-mark {
+  border-color: transparent;
+  background: none;
+  color: var(--l-color-blue-100);
+  font-size: var(--l-font-size-smaller);
 }

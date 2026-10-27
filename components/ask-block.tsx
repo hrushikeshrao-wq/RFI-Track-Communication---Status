@@ -156,12 +156,30 @@ export function AskBlock({
   // Both typed-entry questions share the combobox: the location question
   // suggests places, the search question suggests its own option catalog —
   // whole while the field is empty, filtered as the buyer types.
-  const suggestions: { label: string; value: string; kind?: string }[] =
+  /**
+   * Search question that takes several answers: picks collect as chips and the
+   * list stays open, and a typed product the catalog lacks is offered as
+   * "Add".
+   */
+  const multiSearch = Boolean(question.search && question.multi);
+  const typed = place.trim();
+  const suggestions: { label: string; value: string; kind?: string; add?: boolean }[] =
     status !== "active"
       ? []
       : question.location
         ? locationSuggestions(place)
-        : question.search
+        : multiSearch
+          ? [
+              ...options
+                .filter((option) => !isOptOutOption(option))
+                .filter((option) => option.toLowerCase().includes(typed.toLowerCase()))
+                .map((option) => ({ label: option, value: option })),
+              ...(typed &&
+              ![...options, ...picked].some((option) => option.toLowerCase() === typed.toLowerCase())
+                ? [{ label: typed, value: typed, add: true }]
+                : []),
+            ]
+          : question.search
           ? [
               ...options
                 .filter((option) => !isOptOutOption(option))
@@ -179,6 +197,14 @@ export function AskBlock({
   const submitPlace = (value: string) => {
     const text = value.trim();
     if (!text) return;
+    if (multiSearch) {
+      // Toggle, matching an earlier pick however it was typed, then stay in
+      // the field so the buyer can keep adding.
+      onSelect(picked.find((item) => item.toLowerCase() === text.toLowerCase()) ?? text);
+      setPlace("");
+      setHighlighted(0);
+      return;
+    }
     // "Other" isn't an answer — it opens the write-in field below instead.
     if (question.search && text === OTHER_OPTION) {
       setSuggestOpen(false);
@@ -283,22 +309,49 @@ export function AskBlock({
             submitPlace(otherOpen ? otherText : place);
           }}
         >
+          {multiSearch && picked.length > 0 && (
+            <div className="answer-pill-row" role="group" aria-label="Selected">
+              {picked.map((item) => (
+                <span className="answer-pill" key={item}>
+                  {item}
+                  <button
+                    type="button"
+                    className="answer-pill-remove"
+                    aria-label={`Remove ${item}`}
+                    onClick={() => onSelect(item)}
+                  >
+                    <l-icon name="xmark" aria-hidden="true" />
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
           <div className="location-entry-field">
             {/* The dropdown sits above the input — the question card lives at
                 the foot of the transcript, so upward is where the room is. */}
             {suggesting && (
               <ul
-                className={`location-suggest${question.search ? " location-suggest-down" : ""}`}
+                className={`location-suggest${
+                  multiSearch
+                    ? " location-suggest-inline"
+                    : question.search
+                      ? " location-suggest-down"
+                      : ""
+                }`}
                 role="listbox"
+                aria-multiselectable={multiSearch || undefined}
                 aria-label={question.search ? "Product suggestions" : "Location suggestions"}
               >
-                {suggestions.map((suggestion, index) => (
-                  <li key={suggestion.label}>
+                {suggestions.map((suggestion, index) => {
+                  const isPicked = multiSearch && picked.includes(suggestion.value);
+                  return (
+                  <li key={suggestion.add ? `add:${suggestion.label}` : suggestion.label}>
                     <button
                       type="button"
                       role="option"
-                      aria-selected={index === highlighted}
+                      aria-selected={multiSearch ? isPicked : index === highlighted}
                       className="location-suggest-row"
+                      data-add={suggestion.add || undefined}
                       data-active={index === highlighted || undefined}
                       // Mousedown, so the pick lands before the input's blur
                       // closes the list out from under the click.
@@ -308,17 +361,36 @@ export function AskBlock({
                       }}
                       onMouseEnter={() => setHighlighted(index)}
                     >
-                      <l-icon
-                        name={question.location ? "location-dot" : "magnifying-glass"}
-                        aria-hidden="true"
-                      />
-                      {suggestion.label}
+                      {multiSearch ? (
+                        suggestion.add ? (
+                          <span className="row-indicator suggest-add-mark" aria-hidden="true">
+                            <l-icon name="plus" />
+                          </span>
+                        ) : (
+                          <span className="row-indicator" aria-hidden="true">
+                            {isPicked && <l-icon name="check" />}
+                          </span>
+                        )
+                      ) : (
+                        <l-icon
+                          name={question.location ? "location-dot" : "magnifying-glass"}
+                          aria-hidden="true"
+                        />
+                      )}
+                      {suggestion.add ? (
+                        <span>
+                          Add product <strong>“{suggestion.label}”</strong>
+                        </span>
+                      ) : (
+                        suggestion.label
+                      )}
                       {suggestion.kind && (
                         <span className="location-suggest-kind">{suggestion.kind}</span>
                       )}
                     </button>
                   </li>
-                ))}
+                  );
+                })}
               </ul>
             )}
             <label className="location-search">
@@ -338,7 +410,12 @@ export function AskBlock({
                 placeholder={
                   question.location
                     ? "ZIP code, city, or state"
-                    : "Search products — brackets, washers…"
+                    : multiSearch
+                      ? `e.g. ${options
+                          .filter((option) => !isOptOutOption(option))
+                          .slice(0, 2)
+                          .join(", ")}`
+                      : "Search products — brackets, washers…"
                 }
                 role="combobox"
                 aria-expanded={suggesting}
@@ -351,6 +428,10 @@ export function AskBlock({
                 onFocus={() => setSuggestOpen(true)}
                 onBlur={() => setSuggestOpen(false)}
                 onKeyDown={(event) => {
+                  if (multiSearch && event.key === "Backspace" && !place && picked.length > 0) {
+                    onSelect(picked[picked.length - 1]);
+                    return;
+                  }
                   if (!suggesting) return;
                   if (event.key === "ArrowDown") {
                     event.preventDefault();
@@ -386,13 +467,16 @@ export function AskBlock({
               />
             </div>
           )}
-          <button
-            kind="primary"
-            type="submit"
-            disabled={otherOpen ? !otherText.trim() : !place.trim()}
-          >
-            {question.location ? "Set location" : "Set product"}
-          </button>
+          {/* Multi-select settles from the card's Next button instead. */}
+          {!multiSearch && (
+            <button
+              kind="primary"
+              type="submit"
+              disabled={otherOpen ? !otherText.trim() : !place.trim()}
+            >
+              {question.location ? "Set location" : "Set product"}
+            </button>
+          )}
         </form>
       )}
 

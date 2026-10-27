@@ -525,6 +525,7 @@
     "title": "Features & secondary operations",
     "tier": "adaptive",
     "multi": true,
+    "search": true,
     "ask": "Does the part need anything beyond the stamping itself?",
     "hint": "Heat treat, tapping, plating, embossing, and other finishing beyond the stamp.",
     "options": [
