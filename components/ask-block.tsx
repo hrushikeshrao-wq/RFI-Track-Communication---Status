@@ -379,7 +379,7 @@ export function AskBlock({
                       )}
                       {suggestion.add ? (
                         <span>
-                          Add product <strong>“{suggestion.label}”</strong>
+                          Add <strong>“{suggestion.label}”</strong>
                         </span>
                       ) : (
                         suggestion.label
