@@ -5766,3 +5766,243 @@ l-icon[name="envelope"]::before {
   color: var(--l-color-blue-100);
   font-size: var(--l-font-size-smaller);
 }
+
+/* ==========================================================================
+   Mobile supplier profile (/supplier-profile, THO-3195): the mobile SRP and
+   company profile, held to a phone-width column on wider screens. Type comes
+   from Tailoft's txt-* classes in the markup; everything here is layout on
+   Tailoft's space, color and radius tokens.
+   ========================================================================== */
+.mp-stage {
+  min-height: 100%;
+  background: var(--l-color-gray-7);
+}
+
+.mp-phone {
+  /* Prototype frame, not product UI: a phone-width column on desktop. */
+  max-width: 420px;
+  min-height: 100vh;
+  margin: 0 auto;
+  border-inline: 1px solid var(--l-color-border);
+  background: var(--color-white, #fff);
+}
+
+.mp-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--l-space-3) var(--l-space-4);
+  border-bottom: 1px solid var(--l-color-border);
+  background: var(--color-white, #fff);
+}
+
+.mp-header-icons {
+  display: flex;
+  gap: var(--l-space-5);
+  color: var(--l-color-darkblue-100);
+  font-size: var(--l-font-size-small);
+}
+
+.mp-logo {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: calc(var(--l-space-1) * 11);
+  height: calc(var(--l-space-1) * 11);
+  border: 1px solid var(--l-color-border);
+  border-radius: var(--l-radius-1);
+  overflow: hidden;
+  color: var(--l-color-darkblue-75);
+  font-weight: var(--l-font-weight-semibold);
+}
+
+.mp-logo--lg {
+  width: calc(var(--l-space-1) * 16);
+  height: calc(var(--l-space-1) * 16);
+}
+
+/* Results */
+.mp-results-head {
+  padding: var(--l-space-4) var(--l-space-4) var(--l-space-2);
+}
+
+.mp-results {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mp-result {
+  display: grid;
+  gap: var(--l-space-2);
+  padding: var(--l-space-4);
+  border-top: 1px solid var(--l-color-border);
+  /* Clears the sticky header when Back to results lands on this card. */
+  scroll-margin-top: calc(var(--l-space-1) * 16);
+}
+
+.mp-result:target {
+  animation: mp-flash 1.6s ease-out;
+}
+
+@keyframes mp-flash {
+  from {
+    background: var(--l-color-blue-10);
+  }
+}
+
+.mp-result-head {
+  display: flex;
+  gap: var(--l-space-3);
+  align-items: center;
+}
+
+.mp-clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+.mp-result > a {
+  justify-self: start;
+}
+
+/* Profile */
+.mp-profile {
+  padding: var(--l-space-3) var(--l-space-4) var(--l-space-8);
+}
+
+/* Back to results | Next supplier, first thing under the site header. */
+.mp-nav {
+  display: flex;
+  gap: var(--l-space-3);
+  /* Both blue labels sit on the first line; the next name hangs below. */
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--l-space-3);
+}
+
+/* Tailoft links default to 0.9em; its --font-size hook pins them to the scale. */
+.mp-phone a {
+  --font-size: var(--l-font-size-smaller);
+}
+
+.mp-claim a {
+  --font-size: 1em;
+}
+
+.mp-result-head a {
+  --font-size: var(--l-font-size-small);
+}
+
+.mp-nav-back,
+.mp-nav-next-label {
+  display: inline-flex;
+  gap: var(--l-space-1);
+  align-items: center;
+  white-space: nowrap;
+}
+
+.mp-nav-back {
+  flex-shrink: 0;
+}
+
+.mp-nav-next {
+  display: grid;
+  justify-items: end;
+  min-width: 0;
+}
+
+.mp-nav-next-name {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mp-profile-head {
+  display: flex;
+  gap: var(--l-space-3);
+  align-items: flex-start;
+  margin-top: var(--l-space-2);
+}
+
+/* The former Claim block: a status chip, then the ask on the same row. */
+.mp-claim {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--l-space-1) var(--l-space-2);
+  align-items: center;
+  margin-block: var(--l-space-1);
+}
+
+.mp-claim-chip {
+  gap: var(--l-space-1);
+}
+
+.mp-claim-chip l-icon {
+  color: var(--l-color-green-125);
+}
+
+.mp-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--l-space-2);
+  margin-top: var(--l-space-4);
+}
+
+.mp-actions button {
+  justify-content: center;
+}
+
+.mp-action-wide {
+  grid-column: 1 / -1;
+}
+
+.mp-section {
+  margin-top: var(--l-space-6);
+}
+
+.mp-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--l-space-3);
+}
+
+.mp-similar {
+  display: grid;
+  grid-auto-columns: calc(50% - var(--l-space-1));
+  grid-auto-flow: column;
+  gap: var(--l-space-2);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.mp-similar-card {
+  display: grid;
+  gap: var(--l-space-2);
+  align-content: start;
+  padding: var(--l-space-3);
+  scroll-snap-align: start;
+}
+
+.mp-facts {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--l-space-2) var(--l-space-4);
+  margin: var(--l-space-4) 0 0;
+}
+
+.mp-facts dt {
+  color: var(--l-color-darkblue-60);
+}
+
+.mp-facts dd {
+  margin: 0;
+}
