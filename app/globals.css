@@ -5826,6 +5826,8 @@ l-icon[name="envelope"]::before {
 
 /* Results */
 .mp-results-head {
+  display: grid;
+  gap: var(--l-space-1);
   padding: var(--l-space-4) var(--l-space-4) var(--l-space-2);
 }
 
@@ -5913,6 +5915,7 @@ l-icon[name="envelope"]::before {
 
 .mp-nav-next {
   display: grid;
+  gap: var(--l-space-1);
   justify-items: end;
   min-width: 0;
 }
@@ -5931,13 +5934,20 @@ l-icon[name="envelope"]::before {
   margin-top: var(--l-space-2);
 }
 
+/* Name, then the lines under it. Spaced with gap, not margins: the mar-0
+   utility on these lines would zero any margin set here. */
+.mp-identity {
+  display: grid;
+  gap: var(--l-space-1);
+  justify-items: start;
+}
+
 /* The former Claim block: a status chip, then the ask on the same row. */
 .mp-claim {
   display: flex;
   flex-wrap: wrap;
   gap: var(--l-space-1) var(--l-space-2);
   align-items: center;
-  margin-block: var(--l-space-1);
 }
 
 .mp-claim-chip {

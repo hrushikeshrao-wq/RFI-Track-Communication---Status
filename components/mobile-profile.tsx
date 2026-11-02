@@ -57,7 +57,7 @@ function ResultsList() {
               <span className="mp-logo" aria-hidden="true">
                 <SupplierLogo name={supplier.name} size={36} />
               </span>
-              <div>
+              <div className="mp-identity">
                 <Link href={{ pathname: ROUTE, query: { id: supplier.id } }}>
                   {supplier.name}
                 </Link>
@@ -132,7 +132,7 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
         <span className="mp-logo mp-logo--lg" aria-hidden="true">
           <SupplierLogo name={supplier.name} size={56} />
         </span>
-        <div>
+        <div className="mp-identity">
           <h1 className="txt-subpage-title mar-0">{supplier.name}</h1>
           {/* Item 2: the Claim block becomes a single line under the name. */}
           {claimed ? (
