@@ -6256,19 +6256,29 @@ details.mc-toc > summary {
   margin-top: var(--l-space-10);
 }
 
+/* Cards match production: Tailoft panels with shadow-1, stacked with a gap. */
 .mc-cards {
-  margin: var(--l-space-3) 0 0;
+  display: grid;
+  gap: var(--l-space-5);
+  margin: var(--l-space-4) 0 0;
   padding: 0;
   list-style: none;
 }
 
 .mc-card {
   display: grid;
-  gap: var(--l-space-2);
-  padding: var(--l-space-4) 0;
-  border-top: var(--l-border-width-default) solid var(--l-color-border);
+  gap: var(--l-space-3);
 }
 
-.mc-card-cta {
-  justify-content: center;
+.mc-card-location {
+  display: flex;
+  gap: var(--l-space-3);
+  align-items: center;
+  /* Production keeps the location tight under the name. */
+  margin: calc(var(--l-space-2) * -1) 0 0;
+}
+
+button.mc-card-cta {
+  justify-self: start;
+  font-weight: var(--l-font-weight-regular);
 }

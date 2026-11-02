@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { SupplierLogo } from "@/components/supplier-logo";
 import { BASE_PATH } from "@/lib/base-path";
 import { CATEGORY_LABEL, SUPPLIERS, type Supplier } from "@/lib/suppliers";
 
@@ -61,27 +60,21 @@ function Breadcrumb() {
   );
 }
 
+/** Production's recommended-supplier card: name, location, three lines, profile link. */
 function SupplierCard({ supplier }: { supplier: Supplier }) {
   return (
-    <li className="mc-card">
-      <div className="mp-result-head">
-        <span className="mp-logo" aria-hidden="true">
-          <SupplierLogo name={supplier.name} size={36} />
-        </span>
-        <div>
-          <a href="#" onClick={noop} className="txt-label-lg">
-            {supplier.name}
-          </a>
-          <p className="txt-body-sm txt-darkblue-60 mar-0">
-            {supplier.city}, {supplier.state}
-            {supplier.companyTypes[0] ? ` · ${supplier.companyTypes[0]}` : null}
-          </p>
-        </div>
-      </div>
-      <p className="mp-clamp txt-body-sm mar-0">{supplier.description}</p>
-      <button kind="primary" className="mc-card-cta" onClick={noop}>
-        Contact Supplier
-      </button>
+    <li>
+      <l-panel class="mc-card box-shadow-1">
+        <h3 className="txt-panel-title">{supplier.name}</h3>
+        <p className="mc-card-location txt-label">
+          <l-icon name="location-dot" class="txt-blue-100" />
+          {supplier.city}, {supplier.state} {supplier.zip}
+        </p>
+        <p className="mp-clamp txt-body-sm mar-0">{supplier.description}</p>
+        <button kind="primary-outline" scale="small" className="mc-card-cta" onClick={noop}>
+          View Company Profile
+        </button>
+      </l-panel>
     </li>
   );
 }
