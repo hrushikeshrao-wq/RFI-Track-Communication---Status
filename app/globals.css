@@ -5930,6 +5930,48 @@ l-icon[name="envelope"]::before {
   background: var(--color-white, #fff);
 }
 
+/* Production's trust badges on the SRP card (values from thomasnet.com's
+   Top Responder pill). Only drawn when the card gets trustBadges. */
+.card-trust-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+/* The badges move as one group: beside the name when they fit, otherwise
+   together on the next line. The name never narrows to make room for them. */
+.card-identity > div:has(> .card-badges) {
+  flex-wrap: wrap;
+  row-gap: var(--l-space-1);
+}
+
+.card-badges {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--l-space-2);
+  align-items: center;
+}
+
+.top-responder {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--l-space-1);
+  align-items: center;
+  height: var(--l-space-6);
+  padding: 0 9px 0 var(--l-space-1);
+  border: 1px solid #c6e8b2;
+  border-radius: var(--l-radius-full);
+  background: #ecf8e4;
+  color: #2a6f0b;
+  font-size: 12px;
+  font-weight: var(--l-font-weight-bold);
+  white-space: nowrap;
+}
+
+.top-responder svg {
+  width: 18px;
+  height: 18px;
+}
+
 .mp-screen .results-list {
   background: var(--color-white, #fff);
 }
@@ -5962,12 +6004,20 @@ l-icon[name="envelope"]::before {
 .mp-profile-top {
   gap: var(--l-space-3);
   justify-items: stretch;
-  border-bottom: 1px solid var(--l-color-border);
+  /* Flows straight into the name block below: no divider, no doubled gap. */
+  padding-bottom: 0;
 }
 
 .mp-profile-main {
   padding-bottom: var(--l-space-5);
+}
+
+/* Both blocks share one white card, so no hairline of grey shows between
+   them; its shadow only falls along the bottom, onto the grey page. */
+.mp-profile-card {
+  background: var(--color-white, #fff);
   box-shadow: var(--l-shadow-1);
+  clip-path: inset(0 0 calc(var(--l-space-2) * -1) 0);
 }
 
 .mp-profile-main h1 {
@@ -6006,9 +6056,14 @@ l-icon[name="envelope"]::before {
 
 .mp-nav-next {
   display: grid;
-  gap: var(--l-space-1);
   justify-items: end;
   min-width: 0;
+}
+
+/* Tucked close under "Next supplier": a tight line instead of a gap. Scoped
+   to .mp-nav so it outranks txt-body-sm's line height. */
+.mp-nav .mp-nav-next-name {
+  line-height: var(--l-space-4);
 }
 
 .mp-nav-next-name {
@@ -6019,6 +6074,9 @@ l-icon[name="envelope"]::before {
 }
 
 .mp-breadcrumb {
+  /* Divider between the breadcrumb and Back to results / Next supplier. */
+  padding-bottom: var(--l-space-3);
+  border-bottom: 1px solid var(--l-color-border);
   color: var(--l-color-darkblue-75);
   font-size: var(--l-font-size-smaller);
   line-height: 1.7;
@@ -6032,6 +6090,9 @@ l-icon[name="envelope"]::before {
 .mp-tools {
   display: flex;
   align-items: center;
+  justify-content: center;
+  justify-self: stretch;
+  margin-top: var(--l-space-3);
 }
 
 .mp-tools a {
@@ -6045,7 +6106,6 @@ l-icon[name="envelope"]::before {
 }
 
 .mp-tools a:first-child {
-  padding-left: var(--l-space-1);
   border-left: 0;
 }
 
@@ -6067,7 +6127,8 @@ l-icon[name="envelope"]::before {
 
 .mp-types {
   color: var(--l-color-darkblue-100);
-  font-size: var(--l-font-size-smaller);
+  /* 13px semibold, as on thomasnet.com. */
+  font-size: var(--l-font-size-smallest);
   font-weight: var(--l-font-weight-semibold);
 }
 

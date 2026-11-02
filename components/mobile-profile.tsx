@@ -27,6 +27,9 @@ const profileHref = (supplier: Supplier) => `${ROUTE}?id=${supplier.id}`;
  */
 const isClaimed = (supplier: Supplier) => supplier.sponsored;
 
+/** Stubbed like isClaimed: a couple of the verified advertisers. */
+const TOP_RESPONDERS = new Set(["principal-manufacturing-corporation", "arcade-metal-stamping"]);
+
 /**
  * Wider than a phone, the page shows itself in a 390px frame so the SRP
  * card's own phone breakpoints apply, as they would on a device.
@@ -106,6 +109,7 @@ function ResultsList() {
               onToggleAdd={() => {}}
               matchPills={MATCH_PILLS}
               profileHref={profileHref(supplier)}
+              trustBadges={{ verified: isClaimed(supplier), topResponder: TOP_RESPONDERS.has(supplier.id) }}
             />
           </div>
         ))}
@@ -157,10 +161,10 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
 
   return (
     <article className="mp-profile">
+      {/* One white card for navigation and the name block: no seam between them. */}
+      <div className="mp-profile-card">
       <div className="mp-profile-top">
-        <ProfileNav supplier={supplier} index={index} />
-
-        {/* Production's breadcrumb and tool row, unchanged by the ticket. */}
+        {/* Navigation first: where am I, then where next. */}
         <p className="mp-breadcrumb mar-0">
           <a href="#" onClick={noop}>
             Home
@@ -171,17 +175,7 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
           </a>{" "}
           / <span>{supplier.name} Company Profile</span>
         </p>
-        <div className="mp-tools">
-          <a href="#" onClick={noop} aria-label="Save">
-            <l-icon name="bookmark" />
-          </a>
-          <a href="#" onClick={noop}>
-            <l-icon name="circle-plus" /> Shortlist
-          </a>
-          <a href="#" onClick={noop}>
-            <l-icon name="pen-to-square" /> Suggest an Edit
-          </a>
-        </div>
+        <ProfileNav supplier={supplier} index={index} />
       </div>
 
       <div className="mp-profile-main">
@@ -218,6 +212,20 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
             <l-icon name="phone" /> Call Supplier
           </button>
         </div>
+        {/* Secondary actions after the primary ones, as on most mobile profiles. */}
+        <div className="mp-tools">
+          <a href="#" onClick={noop} aria-label="Save">
+            <l-icon name="bookmark" />
+          </a>
+          <a href="#" onClick={noop}>
+            <l-icon name="circle-plus" /> Shortlist
+          </a>
+          <a href="#" onClick={noop}>
+            <l-icon name="pen-to-square" /> Suggest an Edit
+          </a>
+        </div>
+      </div>
+
       </div>
 
       <section className="mp-section">

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 import { ContactStatus } from "@/components/contact-status";
 import { SupplierLogo } from "@/components/supplier-logo";
+import { TopResponderBadge, VerifiedSquareIcon } from "@/components/trust-badges";
 import { BASE_PATH } from "@/lib/base-path";
 import { RAIL_LIMIT, isUncontactable, type Supplier } from "@/lib/suppliers";
 
@@ -21,6 +22,11 @@ type SupplierCardProps = {
   matchPills: string[];
   /** Where the name and View Profile go (same tab). Without it they're inert. */
   profileHref?: string;
+  /**
+   * Production's trust badges (gold verified square, Top Responder) in place
+   * of the prototype's verified image and contactable envelope.
+   */
+  trustBadges?: { verified: boolean; topResponder: boolean };
 };
 
 /** Category keywords bolded inside descriptions, as on the reference SRP card. */
@@ -113,6 +119,7 @@ export function SupplierCard({
   onToggleAdd,
   matchPills,
   profileHref,
+  trustBadges,
 }: SupplierCardProps) {
   const [expanded, setExpanded] = useState(false);
   const clampable = supplier.description.length > 180;
@@ -136,16 +143,31 @@ export function SupplierCard({
                 {supplier.name}
               </a>
             )}
-            {supplier.verified && (
-              <Image
-                src={`${BASE_PATH}/verified-badge.png`}
-                width={18}
-                height={18}
-                alt="Verified supplier"
-                title="Verified supplier"
-              />
+            {trustBadges ? (
+              (trustBadges.verified || trustBadges.topResponder) && (
+                <span className="card-badges">
+                  {trustBadges.verified && (
+                    <span className="card-trust-icon" title="Verified supplier">
+                      <VerifiedSquareIcon />
+                    </span>
+                  )}
+                  {trustBadges.topResponder && <TopResponderBadge />}
+                </span>
+              )
+            ) : (
+              <>
+                {supplier.verified && (
+                  <Image
+                    src={`${BASE_PATH}/verified-badge.png`}
+                    width={18}
+                    height={18}
+                    alt="Verified supplier"
+                    title="Verified supplier"
+                  />
+                )}
+                <ContactStatus contactable={!isUncontactable(supplier)} />
+              </>
             )}
-            <ContactStatus contactable={!isUncontactable(supplier)} />
           </div>
           {profileHref ? (
             <Link href={profileHref} className="card-profile-link">
