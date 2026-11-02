@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
 import { ContactStatus } from "@/components/contact-status";
 import { SupplierLogo } from "@/components/supplier-logo";
@@ -18,6 +19,8 @@ type SupplierCardProps = {
   onToggleAdd: () => void;
   /** Generic capability labels (max 5) derived from the search and answers. */
   matchPills: string[];
+  /** Where the name and View Profile go (same tab). Without it they're inert. */
+  profileHref?: string;
 };
 
 /** Category keywords bolded inside descriptions, as on the reference SRP card. */
@@ -109,6 +112,7 @@ export function SupplierCard({
   addDisabled = false,
   onToggleAdd,
   matchPills,
+  profileHref,
 }: SupplierCardProps) {
   const [expanded, setExpanded] = useState(false);
   const clampable = supplier.description.length > 180;
@@ -123,9 +127,15 @@ export function SupplierCard({
         </div>
         <div className="card-identity flex-1">
           <div className="flex align-items-center gap-2">
-            <a href="#" className="card-title" onClick={noop}>
-              {supplier.name}
-            </a>
+            {profileHref ? (
+              <Link href={profileHref} className="card-title">
+                {supplier.name}
+              </Link>
+            ) : (
+              <a href="#" className="card-title" onClick={noop}>
+                {supplier.name}
+              </a>
+            )}
             {supplier.verified && (
               <Image
                 src={`${BASE_PATH}/verified-badge.png`}
@@ -137,9 +147,15 @@ export function SupplierCard({
             )}
             <ContactStatus contactable={!isUncontactable(supplier)} />
           </div>
-          <a href="#" className="card-profile-link" onClick={noop}>
-            View Profile
-          </a>
+          {profileHref ? (
+            <Link href={profileHref} className="card-profile-link">
+              View Profile
+            </Link>
+          ) : (
+            <a href="#" className="card-profile-link" onClick={noop}>
+              View Profile
+            </a>
+          )}
         </div>
         <div className="card-actions flex align-items-center gap-2 flex-shrink-0">
           {/* The wrapper carries the hover note: a disabled button can't

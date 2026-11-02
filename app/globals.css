@@ -5769,9 +5769,11 @@ l-icon[name="envelope"]::before {
 
 /* ==========================================================================
    Mobile supplier profile (/supplier-profile, THO-3195): the mobile SRP and
-   company profile, held to a phone-width column on wider screens. Type comes
-   from Tailoft's txt-* classes in the markup; everything here is layout on
-   Tailoft's space, color and radius tokens.
+   company profile as production renders them, plus the ticket's changes.
+   Type comes from Tailoft's txt-* classes in the markup; everything here is
+   layout on Tailoft's space, color and radius tokens. The shared frame rules
+   (mp-stage, mp-phone, mp-header, mp-logo, mp-clamp, mp-result-head) are also
+   used by /category-mobile.
    ========================================================================== */
 .mp-stage {
   min-height: 100%;
@@ -5819,43 +5821,6 @@ l-icon[name="envelope"]::before {
   font-weight: var(--l-font-weight-semibold);
 }
 
-.mp-logo--lg {
-  width: calc(var(--l-space-1) * 16);
-  height: calc(var(--l-space-1) * 16);
-}
-
-/* Results */
-.mp-results-head {
-  display: grid;
-  gap: var(--l-space-1);
-  padding: var(--l-space-4) var(--l-space-4) var(--l-space-2);
-}
-
-.mp-results {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mp-result {
-  display: grid;
-  gap: var(--l-space-2);
-  padding: var(--l-space-4);
-  border-top: 1px solid var(--l-color-border);
-  /* Clears the sticky header when Back to results lands on this card. */
-  scroll-margin-top: calc(var(--l-space-1) * 16);
-}
-
-.mp-result:target {
-  animation: mp-flash 1.6s ease-out;
-}
-
-@keyframes mp-flash {
-  from {
-    background: var(--l-color-blue-10);
-  }
-}
-
 .mp-result-head {
   display: flex;
   gap: var(--l-space-3);
@@ -5869,13 +5834,144 @@ l-icon[name="envelope"]::before {
   -webkit-line-clamp: 3;
 }
 
-.mp-result > a {
-  justify-self: start;
+/* Tailoft links default to 0.9em; its --font-size hook pins them to the scale. */
+.mp-phone a {
+  --font-size: var(--l-font-size-smaller);
 }
 
-/* Profile */
-.mp-profile {
-  padding: var(--l-space-3) var(--l-space-4) var(--l-space-8);
+.mp-result-head a {
+  --font-size: var(--l-font-size-small);
+}
+
+/* Wider than a phone: the page shows itself in a 390px device frame, so the
+   SRP card's own phone breakpoints apply. Prototype chrome, not product UI. */
+.mp-device-stage {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: var(--l-space-6);
+  background: var(--l-color-gray-7);
+}
+
+.mp-device {
+  width: 390px;
+  height: min(844px, calc(100vh - var(--l-space-6) * 2));
+  border: 1px solid var(--l-color-border);
+  border-radius: var(--l-radius-1);
+  background: var(--color-white, #fff);
+}
+
+/* The phone page itself */
+.mp-screen {
+  min-height: 100vh;
+  background: var(--l-color-gray-7);
+}
+
+.mp-site-header {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--l-space-3) var(--l-space-4);
+  border-bottom: 1px solid var(--l-color-border);
+  background: var(--color-white, #fff);
+}
+
+.mp-site-header-actions {
+  display: flex;
+  gap: var(--l-space-4);
+  align-items: center;
+  color: var(--l-color-darkblue-100);
+}
+
+.mp-site-header-actions > a {
+  --font-size: var(--l-font-size-small);
+  color: var(--l-color-darkblue-100);
+}
+
+.mp-site-header-actions > l-icon {
+  color: var(--l-color-blue-100);
+  font-size: var(--l-font-size-medium);
+}
+
+/* Results */
+.mp-search {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: var(--l-space-4);
+  border-bottom: 1px solid var(--l-color-border);
+  background: var(--color-white, #fff);
+}
+
+.mp-search input {
+  flex: 1;
+  min-width: 0;
+  height: calc(var(--l-space-1) * 12);
+  padding: 0 calc(var(--l-space-1) * 12) 0 var(--l-space-6);
+  border: 1px solid var(--l-color-darkblue-25);
+  border-radius: var(--l-radius-full);
+  color: var(--l-color-darkblue-100);
+  font: inherit;
+  font-size: var(--l-font-size-small);
+}
+
+.mp-search l-icon {
+  margin-left: calc(var(--l-space-1) * -10);
+  color: var(--l-color-darkblue-75);
+  font-size: var(--l-font-size-medium);
+}
+
+.mp-results-header {
+  padding: var(--l-space-4);
+  border-bottom: 1px solid var(--l-color-border);
+  background: var(--color-white, #fff);
+}
+
+.mp-screen .results-list {
+  background: var(--color-white, #fff);
+}
+
+.mp-result {
+  /* Clears the sticky header when Back to results lands on this card. */
+  scroll-margin-top: calc(var(--l-space-1) * 16);
+}
+
+.mp-result:target .supplier-card {
+  animation: mp-flash 1.6s ease-out;
+}
+
+@keyframes mp-flash {
+  from {
+    background: var(--l-color-blue-10);
+  }
+}
+
+/* Profile: a white top block over the grey page, as on production. */
+.mp-profile-top,
+.mp-profile-main {
+  display: grid;
+  gap: var(--l-space-1);
+  justify-items: start;
+  padding: var(--l-space-4);
+  background: var(--color-white, #fff);
+}
+
+.mp-profile-top {
+  gap: var(--l-space-3);
+  justify-items: stretch;
+  border-bottom: 1px solid var(--l-color-border);
+}
+
+.mp-profile-main {
+  padding-bottom: var(--l-space-5);
+  box-shadow: var(--l-shadow-1);
+}
+
+.mp-profile-main h1 {
+  margin-bottom: var(--l-space-1);
 }
 
 /* Back to results | Next supplier, first thing under the site header. */
@@ -5885,20 +5981,15 @@ l-icon[name="envelope"]::before {
   /* Both blue labels sit on the first line; the next name hangs below. */
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: var(--l-space-3);
 }
 
-/* Tailoft links default to 0.9em; its --font-size hook pins them to the scale. */
-.mp-phone a {
+.mp-nav a,
+.mp-claim a {
   --font-size: var(--l-font-size-smaller);
 }
 
 .mp-claim a {
   --font-size: 1em;
-}
-
-.mp-result-head a {
-  --font-size: var(--l-font-size-small);
 }
 
 .mp-nav-back,
@@ -5927,19 +6018,35 @@ l-icon[name="envelope"]::before {
   white-space: nowrap;
 }
 
-.mp-profile-head {
-  display: flex;
-  gap: var(--l-space-3);
-  align-items: flex-start;
-  margin-top: var(--l-space-2);
+.mp-breadcrumb {
+  color: var(--l-color-darkblue-75);
+  font-size: var(--l-font-size-smaller);
+  line-height: 1.7;
 }
 
-/* Name, then the lines under it. Spaced with gap, not margins: the mar-0
-   utility on these lines would zero any margin set here. */
-.mp-identity {
-  display: grid;
-  gap: var(--l-space-1);
-  justify-items: start;
+.mp-breadcrumb a {
+  --font-size: 1em;
+  text-decoration-line: underline;
+}
+
+.mp-tools {
+  display: flex;
+  align-items: center;
+}
+
+.mp-tools a {
+  --font-size: var(--l-font-size-smaller);
+  display: inline-flex;
+  gap: var(--l-space-2);
+  align-items: center;
+  padding: var(--l-space-1) var(--l-space-4);
+  border-left: 1px solid var(--l-color-border);
+  color: var(--l-color-darkblue-100);
+}
+
+.mp-tools a:first-child {
+  padding-left: var(--l-space-1);
+  border-left: 0;
 }
 
 /* The former Claim block: a status chip, then the ask on the same row. */
@@ -5958,10 +6065,17 @@ l-icon[name="envelope"]::before {
   color: var(--l-color-green-125);
 }
 
+.mp-types {
+  color: var(--l-color-darkblue-100);
+  font-size: var(--l-font-size-smaller);
+  font-weight: var(--l-font-weight-semibold);
+}
+
 .mp-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--l-space-2);
+  justify-self: stretch;
   margin-top: var(--l-space-4);
 }
 
@@ -5974,7 +6088,7 @@ l-icon[name="envelope"]::before {
 }
 
 .mp-section {
-  margin-top: var(--l-space-6);
+  padding: var(--l-space-5) var(--l-space-4) 0;
 }
 
 .mp-section-head {
@@ -6002,19 +6116,31 @@ l-icon[name="envelope"]::before {
   scroll-snap-align: start;
 }
 
-.mp-facts {
+.mp-similar-card a {
+  --font-size: var(--l-font-size-smaller);
+}
+
+.mp-tabs {
+  margin-top: var(--l-space-5);
+  padding: var(--l-space-4);
+  border-block: 1px solid var(--l-color-border);
+  color: var(--l-color-blue-100);
+  font-size: var(--l-font-size-small);
+  font-weight: var(--l-font-weight-semibold);
+}
+
+.mp-description {
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: var(--l-space-2) var(--l-space-4);
-  margin: var(--l-space-4) 0 0;
+  gap: var(--l-space-4);
+  margin: var(--l-space-4);
 }
 
-.mp-facts dt {
-  color: var(--l-color-darkblue-60);
-}
-
-.mp-facts dd {
-  margin: 0;
+.mp-description-tab {
+  justify-self: start;
+  padding: var(--l-space-2) var(--l-space-4);
+  border-bottom: 2px solid var(--l-color-blue-100);
+  color: var(--l-color-blue-100);
+  font-weight: var(--l-font-weight-semibold);
 }
 
 /* ==========================================================================
