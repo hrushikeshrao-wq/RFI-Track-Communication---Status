@@ -179,7 +179,7 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
       </div>
 
       <div className="mp-profile-main">
-        <h1 className="txt-page-title mar-0">{supplier.name}</h1>
+        <h1 className="txt-subpage-title mar-0">{supplier.name}</h1>
         {/* Item 2: the Claim block becomes a single line under the name. */}
         {claimed ? (
           <p className="mp-claim txt-body-sm mar-0">
