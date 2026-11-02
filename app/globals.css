@@ -6016,3 +6016,133 @@ l-icon[name="envelope"]::before {
 .mp-facts dd {
   margin: 0;
 }
+
+/* ==========================================================================
+   Mobile category page (/category-mobile, THO-3196): current vs. proposed
+   MLLP layout, reusing the mp-* phone frame above. The fold marker is a
+   prototype annotation, not product UI.
+   ========================================================================== */
+/* Prototype chrome: the Current / Proposed tabs above the phone. */
+.mp-stage > l-tabs {
+  padding-top: var(--l-space-2);
+}
+
+.mc-phone {
+  position: relative;
+}
+
+/* ~660px of a 390pt-wide phone is visible in Safari with its toolbars. */
+.mc-fold {
+  position: absolute;
+  top: 660px;
+  inset-inline: 0;
+  border-top: 2px dashed var(--l-color-red-100);
+  pointer-events: none;
+}
+
+.mc-fold span {
+  position: absolute;
+  right: var(--l-space-2);
+  top: var(--l-space-1);
+  padding: 0 var(--l-space-1);
+  border-radius: var(--l-radius-1);
+  background: var(--l-color-red-100);
+  color: var(--color-white, #fff);
+  font-size: var(--l-font-size-smallest);
+}
+
+.mc-page {
+  padding: var(--l-space-3) var(--l-space-4) var(--l-space-8);
+}
+
+.mc-intro {
+  display: grid;
+  gap: var(--l-space-4);
+  margin-top: var(--l-space-5);
+}
+
+.mc-intro--compact {
+  gap: var(--l-space-2);
+  margin-top: var(--l-space-2);
+}
+
+/* A plain blue See more / See less text link, inline at the end of the text. */
+button.mc-more {
+  all: unset;
+  display: inline;
+  color: var(--l-color-blue-100);
+  font-size: var(--l-font-size-smallest);
+  font-weight: var(--l-font-weight-semibold);
+  line-height: var(--l-font-lineheight-3);
+  cursor: pointer;
+}
+
+button.mc-more:hover {
+  color: var(--l-color-blue-125);
+  text-decoration: underline;
+}
+
+button.mc-more:focus-visible {
+  border-radius: var(--l-radius-1);
+  box-shadow: 0 0 var(--l-space-1) 1px var(--l-color-blue-50);
+}
+
+.mc-toc ul {
+  display: grid;
+  gap: var(--l-space-2);
+  margin: var(--l-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mc-toc--panel {
+  margin-top: var(--l-space-8);
+  padding: var(--l-space-5);
+  background: var(--l-color-blue-5);
+}
+
+/* Tailoft accordion, pulled flush to the page gutter. */
+details.mc-toc {
+  margin-top: var(--l-space-3);
+  border-top: var(--l-border-width-default) solid var(--l-color-gray-5);
+}
+
+details.mc-toc > summary {
+  padding-inline: 0;
+}
+
+.mc-hero-image {
+  display: grid;
+  place-items: center;
+  height: 220px;
+  margin-top: var(--l-space-8);
+  border-radius: var(--l-radius-1);
+  background: var(--l-color-darkblue-10);
+  color: var(--l-color-darkblue-50);
+  font-size: var(--l-font-size-largest);
+}
+
+.mc-recommended {
+  margin-top: var(--l-space-5);
+}
+
+.mc-page--current .mc-recommended {
+  margin-top: var(--l-space-10);
+}
+
+.mc-cards {
+  margin: var(--l-space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mc-card {
+  display: grid;
+  gap: var(--l-space-2);
+  padding: var(--l-space-4) 0;
+  border-top: var(--l-border-width-default) solid var(--l-color-border);
+}
+
+.mc-card-cta {
+  justify-content: center;
+}
