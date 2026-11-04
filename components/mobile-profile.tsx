@@ -198,7 +198,15 @@ function SupplierProfile({ supplier, index }: { supplier: Supplier; index: numbe
             </span>
           </p>
         )}
-        <p className="mp-types mar-0">{supplier.companyTypes.join(" • ")}</p>
+        {/* Production hides the address below 576px; THO-3195 shows it on phones too. */}
+        <p className="mp-types mar-0">
+          {supplier.companyTypes.join(" • ")}
+          <span className="mp-types-sep" aria-hidden="true">•</span>
+          <span className="mp-address">
+            <l-icon name="location-dot" aria-hidden="true" />
+            {supplier.city}, {supplier.state} {supplier.zip}
+          </span>
+        </p>
 
         <div className="mp-actions">
           {/* Production greys this out on unclaimed profiles. */}

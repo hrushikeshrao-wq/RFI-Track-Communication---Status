@@ -6132,6 +6132,19 @@ l-icon[name="envelope"]::before {
   font-weight: var(--l-font-weight-semibold);
 }
 
+/* Spaced bullet + pin before the address, as in the THBXP-864 build. */
+.mp-types-sep {
+  margin-inline: var(--l-space-3);
+}
+
+.mp-address {
+  display: inline-flex;
+  gap: var(--l-space-1);
+  align-items: center;
+  font-weight: var(--l-font-weight-regular);
+  white-space: nowrap;
+}
+
 .mp-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
