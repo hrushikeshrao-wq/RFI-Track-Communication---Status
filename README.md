@@ -4,18 +4,18 @@ These links are for the `RFI-Track-Communication---Status-V1` branch. They stay 
 
 | | |
 | --- | --- |
-| **Prototype for stakeholders** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/ |
-| **Modal popup prototype** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/ |
-| **Modal option 0 — current experience** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=0 |
-| **Modal option 1 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=1 |
-| **Modal option 2 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=2 |
-| **Modal option 3 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=3 |
-| **Modal option 4 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=4 |
-| **Requests option 0** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=0 |
-| **Requests option 1** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=1 |
-| **Requests option 2** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=2 |
-| **Email option 0** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=email&option=0 |
-| **Email option 1** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=email&option=1 |
+| **Prototype for stakeholders** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/ |
+| **Modal popup prototype** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/ |
+| **Modal option 0 — current experience** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?option=0 |
+| **Modal option 1 — email suppliers** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?option=1 |
+| **Modal option 2 — email suppliers** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?option=2 |
+| **Modal option 3 — email suppliers** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?option=3 |
+| **Modal option 4 — email suppliers** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?option=4 |
+| **Requests option 0** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?surface=requests&option=0 |
+| **Requests option 1** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?surface=requests&option=1 |
+| **Requests option 2** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?surface=requests&option=2 |
+| **Email option 0** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?surface=email&option=0 |
+| **Email option 1** | https://hrushikeshrao-wq.github.io/rfi-track-communication---status/rfi-modal/?surface=email&option=1 |
 | **This branch** | https://github.com/hrushikeshrao-wq/RFI-Track-Communication---Status/tree/RFI-Track-Communication---Status-V1 |
 | **Prototype repo** | https://github.com/hrushikeshrao-wq/RFI-Track-Communication---Status |
 | **Local preview** | http://127.0.0.1:9999/ |
