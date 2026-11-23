@@ -1,23 +1,23 @@
-# Shareable links — right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi
+# Shareable links — RFI-Track-Communication---Status-V1
 
-These links belong to this experiment branch only. They are separate from the official `main` prototype.
+These links belong to this branch only. They are separate from the earlier `right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi` prototype.
 
 ## Prototype for stakeholders
 
-https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/
+https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/
 
-Published from the public prototype repo when `main` is updated. GitHub Pages builds can take a minute after a push. This main preview stays the full sourcing experience.
+Published from this repo when `main` is updated. GitHub Pages builds can take a minute after a push. This main preview stays the full sourcing experience.
 
 ## Modal popup prototype
 
-A separate page for comparing contact-modal options. The switcher on the page can hold more options later.
+A separate page for comparing contact-modal options.
 
-- All options: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/
-- Option 0 — current experience: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=0
-- Option 1 — email suppliers: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=1
-- Option 2 — email suppliers, copied from option 1: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=2
-- Option 3 — email suppliers, copied from option 2: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=3
-- Option 4 — email suppliers, copied from option 3: https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=4
+- All options: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/
+- Option 0 — current experience: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=0
+- Option 1 — email suppliers: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=1
+- Option 2 — email suppliers, copied from option 1: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=2
+- Option 3 — email suppliers, copied from option 2: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=3
+- Option 4 — email suppliers, copied from option 3: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=4
 
 Local:
 
@@ -28,11 +28,32 @@ Local:
 - http://127.0.0.1:9999/rfi-modal/?option=3
 - http://127.0.0.1:9999/rfi-modal/?option=4
 
+## Requests
+
+- Option 0: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=0
+- Option 1: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=1
+- Option 2: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=2
+
+Local:
+
+- http://127.0.0.1:9999/rfi-modal/?surface=requests&option=0
+- http://127.0.0.1:9999/rfi-modal/?surface=requests&option=1
+- http://127.0.0.1:9999/rfi-modal/?surface=requests&option=2
+
+## Email
+
+- Option 0: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=email&option=0
+- Option 1: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=email&option=1
+
+Local:
+
+- http://127.0.0.1:9999/rfi-modal/?surface=email&option=0
+- http://127.0.0.1:9999/rfi-modal/?surface=email&option=1
+
 ## Source
 
-- Experiment branch: https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/tree/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi
-- Open a pull request: https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/pull/new/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi
-- Public prototype repo: https://github.com/hrushikeshrao-wq/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi
+- This branch: https://github.com/hrushikeshrao-wq/RFI-Track-Communication---Status/tree/RFI-Track-Communication---Status-V1
+- Prototype repo: https://github.com/hrushikeshrao-wq/RFI-Track-Communication---Status
 
 ## Local preview
 
