@@ -7,6 +7,7 @@ alwaysApply: false
 
 ## Current status
 
+- Modal popup prototype lives at `/rfi-modal/`. Option 0 is the current contact dialog. Option 1 is the "Email 3 suppliers" reference with the Thomas sales sidebar. Option 2 starts as a copy of Option 1 (`rfi-email-modal-option-2.tsx`). Option 3 starts as a copy of Option 2 (`rfi-email-modal-option-3.tsx`). Option 4 starts as a copy of Option 3 (`rfi-email-modal-option-4.tsx`) so later changes stay off the earlier options. Shareable links list all five; the main stakeholder preview URL is unchanged.
 - Next.js 16 prototype of AI-assisted supplier discovery for Stamping Services,
   styled with the vendored Tailoft design system (`public/tailoft/`).
 - Supplier tiles use 12 local placeholder marks in `public/supplier-marks/`,

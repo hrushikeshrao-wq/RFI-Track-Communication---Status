@@ -5,10 +5,22 @@ These links are for the `right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi` branc
 | | |
 | --- | --- |
 | **Prototype for stakeholders** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/ |
+| **Modal popup prototype** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/ |
+| **Modal option 0 — current experience** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=0 |
+| **Modal option 1 — email suppliers** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=1 |
+| **Modal option 2 — email suppliers** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=2 |
+| **Modal option 3 — email suppliers** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=3 |
+| **Modal option 4 — email suppliers** | https://hrushikeshrao-wq.github.io/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi/rfi-modal/?option=4 |
 | **This branch** | https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/tree/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
 | **Open a pull request** | https://github.com/xometry/right-rail-h3-h4-ai-strategic-sourcing/pull/new/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
 | **Public prototype repo** | https://github.com/hrushikeshrao-wq/right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi |
 | **Local preview** | http://127.0.0.1:9999/ |
+| **Local modal prototype** | http://127.0.0.1:9999/rfi-modal/ |
+| **Local modal option 0** | http://127.0.0.1:9999/rfi-modal/?option=0 |
+| **Local modal option 1** | http://127.0.0.1:9999/rfi-modal/?option=1 |
+| **Local modal option 2** | http://127.0.0.1:9999/rfi-modal/?option=2 |
+| **Local modal option 3** | http://127.0.0.1:9999/rfi-modal/?option=3 |
+| **Local modal option 4** | http://127.0.0.1:9999/rfi-modal/?option=4 |
 
 The same list is kept in [SHAREABLE-LINKS.md](./SHAREABLE-LINKS.md).
 
