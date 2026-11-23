@@ -1,7 +1,7 @@
 # Builds the static export and publishes it to GitHub Pages. This branch is
 # the one linked from the Shareable links section, so a push here publishes
-# the preview. The base path is the lowercased repo name, which is the path
-# GitHub Pages actually serves.
+# the preview. The base path is the repository name, which is the path GitHub
+# Pages serves.
 name: Deploy to GitHub Pages
 
 on:
@@ -23,9 +23,9 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
     steps:
-      - name: Set Pages base path
-        run: echo "NEXT_PUBLIC_BASE_PATH=/$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
