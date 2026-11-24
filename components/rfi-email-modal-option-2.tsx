@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BASE_PATH } from "@/lib/base-path";
+import { RfiAssuranceRail } from "@/components/rfi-assurance-rail";
 import { RfiSuccessPopup } from "@/components/rfi-success-popup";
 
 function formatFileSize(bytes: number) {
@@ -319,7 +320,7 @@ export function RfiEmailModalOption2({ open, onClose, className }: RfiEmailModal
           <h3>Contact with Confidence</h3>
           <p className="rfi-side-lead">Get a response from suppliers or our team will make it right</p>
 
-          <ul className="rfi-assurances">
+          <RfiAssuranceRail>
             <li>
               <span className="rfi-assure-icon" aria-hidden="true">
                 <ClockIcon />
@@ -347,7 +348,7 @@ export function RfiEmailModalOption2({ open, onClose, className }: RfiEmailModal
                 We never share your information with suppliers without your consent.
               </span>
             </li>
-          </ul>
+          </RfiAssuranceRail>
 
           <div className="rfi-reach">
             <button

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { BASE_PATH } from "@/lib/base-path";
+import { RfiAssuranceRail } from "@/components/rfi-assurance-rail";
 import { RfiSuccessPopup } from "@/components/rfi-success-popup";
 
 function formatFileSize(bytes: number) {
@@ -285,7 +286,7 @@ export function RfiEmailModal({ open, onClose, className }: RfiEmailModalProps) 
           ) : null}
           <hr className="rfi-rule" />
 
-          <div className="rfi-reach">
+          <div className="rfi-reach rfi-reach-form">
             <button
               type="button"
               className="rfi-switch"
@@ -348,7 +349,7 @@ export function RfiEmailModal({ open, onClose, className }: RfiEmailModalProps) 
           <h3>Contact with Confidence</h3>
           <p className="rfi-side-lead">Get a response from suppliers or our team will make it right</p>
 
-          <ul className="rfi-assurances">
+          <RfiAssuranceRail>
             <li>
               <span className="rfi-assure-icon" aria-hidden="true">
                 <ClockIcon />
@@ -376,7 +377,27 @@ export function RfiEmailModal({ open, onClose, className }: RfiEmailModalProps) 
                 We never share your information with suppliers without your consent.
               </span>
             </li>
-          </ul>
+          </RfiAssuranceRail>
+
+          <div className="rfi-reach rfi-reach-rail">
+            <button
+              type="button"
+              className="rfi-switch"
+              role="switch"
+              aria-checked={reachOut}
+              disabled={sent}
+              onClick={() => setReachOut((current) => !current)}
+            >
+              <span className="rfi-switch-knob" />
+            </button>
+            <p>
+              <strong>
+                Have Thomas reach out to more <ShieldIcon tone="gold" /> Verified Suppliers
+              </strong>
+              <span>Thomas can use this RFI to look for other qualified suppliers who may meet my needs.</span>
+            </p>
+            <span className="rfi-new">New!</span>
+          </div>
 
           <img
             className="rfi-wordmark"

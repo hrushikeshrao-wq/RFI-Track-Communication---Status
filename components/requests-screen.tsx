@@ -55,10 +55,19 @@ const NAV = [
  */
 export function RequestsScreen({ option = 0 }: { option?: 0 | 1 | 2 }) {
   const [tab, setTab] = useState<"requests" | "archived">("requests");
+  const [navOpen, setNavOpen] = useState(false);
 
   return (
     <div className="requests-screen" data-requests-option={option}>
-      <aside className="requests-side" aria-label="Your account">
+      {navOpen ? (
+        <button
+          type="button"
+          className="requests-nav-backdrop"
+          aria-label="Close account menu"
+          onClick={() => setNavOpen(false)}
+        />
+      ) : null}
+      <aside className={navOpen ? "requests-side is-open" : "requests-side"} id="requests-account-nav" aria-label="Your account">
         <div className="requests-brand">
           <span className="requests-mark" aria-hidden="true">
             <span className="is-capped" />
@@ -115,6 +124,15 @@ export function RequestsScreen({ option = 0 }: { option?: 0 | 1 | 2 }) {
 
       <div className="requests-body">
         <main className="requests-main">
+          <button
+            type="button"
+            className="requests-menu"
+            aria-expanded={navOpen}
+            aria-controls="requests-account-nav"
+            onClick={() => setNavOpen((open) => !open)}
+          >
+            {navOpen ? "Close" : "Menu"}
+          </button>
           <nav className="requests-crumb" aria-label="Breadcrumb">
             <span>Home</span>
             <span aria-hidden="true">&gt;</span>
@@ -162,18 +180,18 @@ export function RequestsScreen({ option = 0 }: { option?: 0 | 1 | 2 }) {
                 <tbody>
                   {REQUEST_ROWS.map((row) => (
                     <tr key={`${row.request}-${row.supplier}`}>
-                      <td>
+                      <td data-label="Request">
                         <button type="button" className="requests-name">
                           {row.request}
                         </button>
                       </td>
-                      <td>{row.created}</td>
-                      <td>{row.neededBy}</td>
-                      <td>
+                      <td data-label="Created">{row.created}</td>
+                      <td data-label="Needed by">{row.neededBy}</td>
+                      <td data-label="Status">
                         <StatusStepper stage={row.stage} supplier={row.supplier} nodes={option === 2} />
                       </td>
-                      <td>{row.supplier}</td>
-                      <td>
+                      <td data-label="Selected suppliers">{row.supplier}</td>
+                      <td data-label="Actions">
                         <button type="button" className="requests-more" aria-label={`More actions for ${row.request} and ${row.supplier}`}>
                           ···
                         </button>

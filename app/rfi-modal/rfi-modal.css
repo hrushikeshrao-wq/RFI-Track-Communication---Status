@@ -470,6 +470,19 @@
   outline: none;
 }
 
+@media (max-width: 860px) {
+  .rfi-body {
+    flex: none;
+  }
+
+  .rfi-body textarea,
+  .rfi-dialog[data-modal-option="4"] .rfi-message-field .contact-desc-editor {
+    flex: none;
+    height: 303px;
+    min-height: 303px;
+  }
+}
+
 .rfi-body.is-invalid textarea {
   box-shadow: inset 0 0 0 1px var(--l-color-red-125, #c53434);
   border-radius: var(--l-radius-1);
@@ -491,6 +504,14 @@
   display: flex;
   flex-wrap: nowrap;
   gap: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.rfi-req-pills::-webkit-scrollbar {
+  display: none;
+  height: 0;
 }
 
 .rfi-req {
@@ -1270,6 +1291,18 @@
   height: var(--l-space-6);
   width: auto;
   margin: auto 0 0;
+}
+
+.rfi-assure-scroller {
+  display: contents;
+}
+
+.rfi-assure-dashes {
+  display: none;
+}
+
+.rfi-reach-rail {
+  display: none;
 }
 
 .rfi-success.is-inset-scroll {
@@ -2867,4 +2900,480 @@
 .email-actions button[aria-label="More actions"] l-icon {
   color: #122536;
   font-size: 16px;
+}
+
+.requests-menu,
+.requests-nav-backdrop {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .rfi-option-bar {
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-width: none;
+    transform: none;
+    justify-content: flex-start;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+
+  .rfi-option-bar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rfi-option-group,
+  .rfi-option-bar button,
+  .rfi-option-name {
+    flex: none;
+  }
+
+  .rfi-scrim {
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .rfi-dialog,
+  .rfi-success.rfi-success-split {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    max-height: 100%;
+    align-items: stretch;
+    overflow: auto;
+    border-radius: 0;
+    box-shadow: none;
+  }
+
+  .rfi-dialog {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    /* Room to scroll the last section clear of the fixed CTA and the option switcher. */
+    padding: 16px 16px 220px;
+  }
+
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) {
+    display: flex;
+    height: 100%;
+    max-height: 100%;
+    overflow: auto;
+  }
+
+  .rfi-dialog .rfi-side,
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-side {
+    position: static;
+    overflow: visible;
+    justify-content: flex-start;
+  }
+
+  .rfi-dialog .rfi-main {
+    display: contents;
+    min-height: 0;
+    height: auto;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .rfi-dialog .rfi-card {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .rfi-dialog .rfi-main > *,
+  .rfi-dialog .rfi-side,
+  .rfi-dialog .rfi-footer {
+    flex: 0 0 auto;
+  }
+
+  .rfi-dialog .rfi-side {
+    order: 2;
+    width: calc(100% + 32px);
+    margin: 16px -16px 0;
+    padding: 20px 16px 16px;
+    align-items: center;
+    height: auto;
+    min-height: max-content;
+    text-align: center;
+  }
+
+  .rfi-dialog .rfi-footer,
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 46px;
+    z-index: 5;
+    order: 3;
+    flex-direction: column;
+    align-items: stretch;
+    width: auto;
+    margin: 0;
+    padding: 12px 16px;
+    border-top: 1px solid #e4e9ee;
+    background: #fff;
+    box-shadow: 0 -8px 24px rgb(9 44 71 / 0.06);
+  }
+
+  .rfi-dialog .rfi-reach-form {
+    display: none;
+  }
+
+  .rfi-dialog .rfi-reach-rail {
+    display: grid;
+  }
+
+  .rfi-dialog .rfi-side-lead {
+    max-width: 280px;
+  }
+
+  .rfi-dialog .rfi-wordmark {
+    margin: 18px auto 0;
+  }
+
+  .rfi-dialog .rfi-assure-scroller {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    width: 100%;
+    margin-top: 4px;
+  }
+
+  .rfi-dialog .rfi-assurances,
+  .rfi-dialog[data-modal-option="1"] .rfi-assurances {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    text-align: center;
+  }
+
+  .rfi-dialog .rfi-assurances::-webkit-scrollbar {
+    display: none;
+  }
+
+  .rfi-dialog .rfi-assurances li,
+  .rfi-dialog[data-modal-option="1"] .rfi-assurances li {
+    display: flex;
+    flex: 0 0 100%;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: none;
+    margin: 0;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .rfi-dialog[data-modal-option="1"] .rfi-assurances li > span:last-child {
+    align-items: center;
+  }
+
+  .rfi-assure-dashes {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .rfi-assure-dashes span {
+    width: 18px;
+    height: 3px;
+    border-radius: 999px;
+    background: #c5d0d8;
+  }
+
+  .rfi-assure-dashes span.is-active {
+    background: var(--l-color-blue-100, #0e6aed);
+  }
+
+  .rfi-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+  }
+
+  .rfi-title {
+    font-size: 22px;
+    line-height: 28px;
+    padding-right: 40px;
+  }
+
+  .rfi-step {
+    font-size: 11px;
+  }
+
+  .rfi-row,
+  .rfi-pills,
+  .rfi-reqs {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .rfi-pills {
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .rfi-pills::-webkit-scrollbar {
+    display: none;
+    height: 0;
+  }
+
+  .rfi-reqs {
+    overflow-x: hidden;
+  }
+
+  .rfi-dialog .rfi-reach {
+    position: relative;
+    align-self: stretch;
+    width: 100%;
+    margin-top: 16px;
+    text-align: left;
+    align-items: start;
+    padding: 12px 64px 12px 12px;
+  }
+
+  .rfi-dialog .rfi-reach > .rfi-new {
+    position: absolute;
+    top: 0;
+    right: 14px;
+    transform: translateY(-50%);
+  }
+
+  .rfi-reach strong {
+    flex-wrap: wrap;
+  }
+
+  .rfi-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rfi-footer .rfi-send,
+  .rfi-success-actions {
+    width: 100%;
+  }
+
+  .rfi-success-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .rfi-success-steps {
+    gap: 6px;
+  }
+
+  .rfi-success-step {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .rfi-prototype .gate-scrim {
+    padding: 0 0 64px;
+  }
+
+  .rfi-prototype .gate-scrim .contact-shell {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+  }
+
+  .rfi-prototype .contact-modal {
+    padding-bottom: 16px;
+  }
+
+  .requests-screen {
+    display: block;
+  }
+
+  .requests-menu {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 12px;
+    border: 1px solid #c5d0d8;
+    border-radius: 6px;
+    background: #fff;
+    color: #16324a;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+
+  .requests-nav-backdrop {
+    display: block;
+    position: absolute;
+    z-index: 20;
+    inset: 0;
+    border: 0;
+    background: rgb(9 44 71 / 0.4);
+    cursor: pointer;
+  }
+
+  .requests-side {
+    position: absolute;
+    z-index: 30;
+    top: 0;
+    bottom: 72px;
+    left: 0;
+    width: min(300px, 88vw);
+    height: auto;
+    transform: translateX(-105%);
+  }
+
+  .requests-side.is-open {
+    transform: none;
+  }
+
+  .requests-body {
+    height: 100%;
+    padding: 16px 16px 96px;
+  }
+
+  .requests-heading h1 {
+    font-size: 24px;
+  }
+
+  .requests-tabs {
+    gap: 20px;
+  }
+
+  .requests-card {
+    overflow: hidden;
+  }
+
+  .requests-grid thead {
+    display: none;
+  }
+
+  .requests-grid,
+  .requests-grid tbody,
+  .requests-grid tr,
+  .requests-grid td {
+    display: block;
+    width: auto;
+  }
+
+  .requests-grid tr {
+    padding: 12px 16px 8px;
+    border-top: 1px solid #e6ebef;
+  }
+
+  .requests-grid td {
+    display: grid;
+    grid-template-columns: 108px minmax(0, 1fr);
+    gap: 8px;
+    align-items: start;
+    padding: 6px 0;
+    border-top: 0;
+  }
+
+  .requests-grid td::before {
+    content: attr(data-label);
+    color: #607484;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+    text-transform: uppercase;
+  }
+
+  .requests-grid td:last-child {
+    text-align: left;
+  }
+
+  .requests-stepper,
+  .requests-stepper ol {
+    max-width: 100%;
+  }
+
+  .email-screen {
+    padding: 12px 12px 96px;
+  }
+
+  .email-thread {
+    width: 100%;
+  }
+
+  .email-mast,
+  .email-head {
+    flex-wrap: wrap;
+    align-items: flex-start;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .email-rfi {
+    white-space: normal;
+  }
+
+  .email-body {
+    padding: 16px;
+  }
+
+  .email-body h1 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+
+  .email-who strong {
+    overflow-wrap: anywhere;
+  }
+
+  .email-actions {
+    margin-left: 0;
+  }
+
+  .email-screen[data-email-option="1"] .email-status-split {
+    grid-template-columns: 1fr;
+  }
+
+  .email-screen[data-email-option="1"] .rfi-success-steps {
+    width: 100%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .email-screen[data-email-option="1"] .rfi-success-step {
+    white-space: normal;
+  }
+
+  .email-body .rfi-success-spec div {
+    flex-wrap: wrap;
+  }
+}
+
+/* Shorter windows shrink the dialog, and the message field was the piece that gave up its height. Keep the desktop description height. */
+@media (max-height: 1048px) {
+  .rfi-dialog .rfi-body textarea,
+  .rfi-dialog[data-modal-option="4"] .rfi-message-field .contact-desc-editor {
+    flex: 0 0 auto;
+    height: 303px;
+    min-height: 303px;
+    max-height: none;
+  }
+
+  .rfi-dialog .rfi-body,
+  .rfi-dialog[data-modal-option="4"] .rfi-message-field,
+  .rfi-dialog .rfi-card,
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-card {
+    flex-shrink: 0;
+    min-height: auto;
+    overflow: visible;
+  }
+
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) {
+    overflow: auto;
+  }
 }
