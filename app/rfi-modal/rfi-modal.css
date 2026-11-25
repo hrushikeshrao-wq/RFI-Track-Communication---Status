@@ -732,7 +732,7 @@
   background: var(--rfi-banner);
 }
 
-.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"])) .rfi-reach {
+.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"])) .rfi-reach {
   align-self: stretch;
   align-items: start;
   width: 100%;
@@ -743,21 +743,21 @@
   text-align: left;
 }
 
-.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"])) .rfi-reply-toggle {
+.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"])) .rfi-reply-toggle {
   gap: 10px;
   font-weight: var(--l-font-weight-regular);
   cursor: default;
 }
 
-.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"])) .rfi-reply-toggle strong {
+.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"])) .rfi-reply-toggle strong {
   font-weight: var(--l-font-weight-semibold);
 }
 
-.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"])) .rfi-reach strong {
+.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"])) .rfi-reach strong {
   display: block;
 }
 
-.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"])) .rfi-reach strong svg {
+.rfi-dialog:is([data-modal-option="2"], :is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"])) .rfi-reach strong svg {
   display: inline-block;
   vertical-align: -2px;
 }
@@ -856,54 +856,140 @@
   margin-top: var(--l-space-4);
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-main {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-main {
   overflow-x: hidden;
   overflow-y: auto;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-card {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-card {
   flex: 1 0 auto;
   overflow: hidden;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-card > * {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-card > * {
   flex-shrink: 0;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-body {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-body {
   flex: 1 0 auto;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-files {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-files {
   margin-top: 4px;
   padding-top: 0;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-files::before {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-files::before {
   content: "";
   display: block;
   margin: 0 0 16px;
   border-top: 1px solid #e4e9ee;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) {
   grid-template-rows: minmax(0, 1fr) auto;
   overflow: hidden;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-main,
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-side {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-main,
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-side {
   min-height: 0;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-side {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-side {
   justify-content: center;
   overflow: hidden;
   padding: var(--l-space-6);
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-wordmark {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-wordmark {
   margin: var(--l-space-5) 0 0;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-tools {
+  flex-wrap: wrap;
+  gap: 8px;
+  row-gap: 16px;
+  container-type: inline-size;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-tools-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 1 auto;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-tools-primary .rfi-tool-reply {
+  position: static;
+  min-width: 0;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-reply-field {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 8px 0 10px;
+  border: 1px solid #e6ebf0;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-reply-field input[type="date"] {
+  width: 7.6em;
+  padding: 0 22px 0 0;
+  border: 0;
+  background: transparent;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-reply-field svg {
+  position: absolute;
+  right: 8px;
+  color: var(--rfi-muted);
+  pointer-events: none;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-reply-field input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: auto 0 0 auto;
+  width: 32px;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-confidence-toggle {
+  flex: none;
+  gap: 10px;
+  white-space: nowrap;
+  cursor: default;
+}
+
+@container (max-width: 575px) {
+  .rfi-dialog[data-modal-option="5"] .rfi-confidence-divider {
+    display: none;
+  }
+
+  .rfi-dialog[data-modal-option="5"] .rfi-confidence-toggle {
+    flex-basis: 100%;
+  }
+}
+
+@media (min-width: 861px) {
+  .rfi-dialog[data-modal-option="5"] {
+    width: min(980px, 100%);
+    grid-template-columns: minmax(0, 1fr) 289px;
+  }
+
+  .rfi-success.rfi-success-split.rfi-success-option-5 {
+    width: min(980px, 100%);
+    grid-template-columns: minmax(0, 1fr) 289px;
+  }
 }
 
 .rfi-dialog[data-modal-option="4"] .rfi-card {
@@ -1003,7 +1089,7 @@
   margin-top: 0;
 }
 
-.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-footer {
+.rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-footer {
   grid-column: 1 / -1;
   position: sticky;
   bottom: 0;
@@ -1285,6 +1371,10 @@
 
 .rfi-dialog[data-modal-option="1"] .rfi-assurances strong {
   margin: 0;
+}
+
+.rfi-dialog .rfi-assurances > li[data-assure-clone] {
+  display: none;
 }
 
 .rfi-wordmark {
@@ -2956,7 +3046,7 @@
     padding: 16px 16px 220px;
   }
 
-  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) {
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) {
     display: flex;
     height: 100%;
     max-height: 100%;
@@ -2964,7 +3054,7 @@
   }
 
   .rfi-dialog .rfi-side,
-  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-side {
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-side {
     position: static;
     overflow: visible;
     justify-content: flex-start;
@@ -3002,7 +3092,7 @@
   }
 
   .rfi-dialog .rfi-footer,
-  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-footer {
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-footer {
     position: fixed;
     left: 0;
     right: 0;
@@ -3062,7 +3152,8 @@
   }
 
   .rfi-dialog .rfi-assurances li,
-  .rfi-dialog[data-modal-option="1"] .rfi-assurances li {
+  .rfi-dialog[data-modal-option="1"] .rfi-assurances li,
+  .rfi-dialog .rfi-assurances > li[data-assure-clone] {
     display: flex;
     flex: 0 0 100%;
     flex-direction: column;
@@ -3367,13 +3458,13 @@
   .rfi-dialog .rfi-body,
   .rfi-dialog[data-modal-option="4"] .rfi-message-field,
   .rfi-dialog .rfi-card,
-  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) .rfi-card {
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-card {
     flex-shrink: 0;
     min-height: auto;
     overflow: visible;
   }
 
-  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"]) {
+  .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) {
     overflow: auto;
   }
 }

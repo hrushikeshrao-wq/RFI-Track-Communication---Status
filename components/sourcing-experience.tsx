@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AskBlock } from "@/components/ask-block";
+import { SmartFilterRail } from "@/components/smart-filter-rail";
 import { DeepDrawGate } from "@/components/deep-draw-gate";
 import { FloatingShortlist } from "@/components/floating-shortlist";
 import { PaneResizer } from "@/components/pane-resizer";
@@ -30,7 +31,8 @@ import {
   type NextAsk,
 } from "@/lib/simulation";
 import { syncableQuestionIds } from "@/lib/filter-sync";
-import { CATEGORY_LABEL } from "@/lib/suppliers";
+import { INITIAL_SPEC, matchCount, type SpecId, type SpecState } from "@/lib/spec";
+import { CATEGORY_LABEL, SEARCH_QUERY } from "@/lib/suppliers";
 import { clearShortlistStore, type ShortlistSnapshot } from "@/lib/shortlist-store";
 
 const OPT_OUT_HINT =
@@ -84,7 +86,7 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
   const [transcript, setTranscript] = useState<TranscriptEntry[]>(() => makeIntro());
   const [answers, setAnswers] = useState<LoggedAnswer[]>([]);
   // The category search that landed the buyer here — the experience's starting point.
-  const [query, setQuery] = useState(CATEGORY_LABEL);
+  const [query, setQuery] = useState(SEARCH_QUERY);
   const [draft, setDraft] = useState("");
   /** Options selected on the active ask, answered from the pinned bottom bar. */
   const [picked, setPicked] = useState<string[]>([]);
@@ -101,6 +103,16 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
   const [browseAsks, setBrowseAsks] = useState(false);
   /** Bumps when the run resets so the rail drops auto-queued chips. */
   const [runId, setRunId] = useState(0);
+  const [spec, setSpecState] = useState<SpecState>(INITIAL_SPEC);
+  const [searchSaved, setSearchSaved] = useState(false);
+  const setSpec = useCallback((id: SpecId, value: string | null) => {
+    setSearchSaved(false);
+    setSpecState((current) => ({ ...current, [id]: value }));
+  }, []);
+  const resetSpec = useCallback(() => {
+    setSearchSaved(false);
+    setSpecState(INITIAL_SPEC);
+  }, []);
   /** Deep Drawing hand-off confirm, opened from the process question. */
   const [deepDrawGateOpen, setDeepDrawGateOpen] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -515,7 +527,7 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
     clearShortlistStore();
     setTranscript(makeIntro());
     setAnswers([]);
-    setQuery(CATEGORY_LABEL);
+    setQuery(SEARCH_QUERY);
     setDraft("");
     setPicked([]);
     setThinking(false);
@@ -526,10 +538,15 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
 
   const restoreSearch = useCallback((snapshot: ShortlistSnapshot) => {
     setAnswers(snapshot.answers);
-    setQuery(snapshot.query);
+    const stored = snapshot.query.trim();
+    setQuery(
+      stored.toLowerCase() === "stamping services" || stored.length === 0
+        ? SEARCH_QUERY
+        : stored,
+    );
   }, []);
 
-  const shortlist = useShortlistState(answers, query, runId, restoreSearch);
+  const shortlist = useShortlistState(answers, query, runId, restoreSearch, spec);
   const pathname = usePathname();
   const isProfile = pathname.startsWith("/supplier/");
 
@@ -542,9 +559,15 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
       applyFilterAnswer,
       clearMappedAnswers: () => removeAnswers(syncableQuestionIds()),
       openDefine,
+      spec,
+      setSpec,
+      resetSpec,
+      matchTotal: matchCount(spec),
+      searchSaved,
+      saveSearch: () => setSearchSaved(true),
       ...shortlist,
     }),
-    [answers, query, runId, removeAnswer, applyFilterAnswer, removeAnswers, openDefine, shortlist],
+    [answers, query, runId, removeAnswer, applyFilterAnswer, removeAnswers, openDefine, spec, setSpec, resetSpec, searchSaved, shortlist],
   );
 
   const activeAsk = transcript.find(
@@ -641,7 +664,10 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
           const trimmed = text.trim();
           // A specific need typed into the search starts the flow directly;
           // the bare category search restarts at the goal step.
-          if (trimmed && trimmed.toLowerCase() !== CATEGORY_LABEL.toLowerCase()) {
+          const bare =
+            trimmed.toLowerCase() === CATEGORY_LABEL.toLowerCase() ||
+            trimmed.toLowerCase() === SEARCH_QUERY.toLowerCase();
+          if (trimmed && !bare) {
             begin(trimmed);
           }
         }}
@@ -656,215 +682,11 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
         {/* Left: define your need. Hidden on a company profile tab. */}
         {!isProfile && (
         <section className="pane pane-left" aria-label="Define your need" hidden={!agentOpen}>
-          <div className="agent-card">
-            <div className="agent-body" ref={scrollRef}>
-            <div className="agent-header">
-              <span className="agent-badge" aria-hidden="true">
-                <l-icon name="sparkles" fill />
-              </span>
-              <div className="agent-header-copy flex-1">
-                <h4 className="mar-0">Intelligently refine your search</h4>
-                <p className="agent-searching mar-0">
-                  Answer questions to match with the right supplier for your need
-                </p>
-              </div>
-            </div>
-            <div className="transcript" data-browse={browseAsks || undefined}>
-              {browseAsks
-                ? browseItems.map((item) => (
-                    <AskBlock
-                      key={item.questionId}
-                      ask={item.ask}
-                      status={item.status}
-                      answer={item.answer}
-                      picked={picked}
-                      onSelect={selectOption}
-                      onSubmit={submitPicked}
-                      collapsed
-                      onOpen={() => openAskFromBrowse(item.questionId, item.entryId)}
-                    />
-                  ))
-                : transcript.map((entry) => {
-                if (entry.kind === "user") {
-                  return (
-                    <div key={entry.id} className="chat-user">
-                      {entry.text}
-                    </div>
-                  );
-                }
-                if (entry.kind === "assistant") {
-                  return (
-                    <div key={entry.id} className="chat-assistant flex flex-col gap-2">
-                      {entry.text.split("\n\n").map((paragraph, index) => (
-                        <p key={index} className="mar-0">
-                          {paragraph}
-                        </p>
-                      ))}
-                      {entry.logged && entry.logged.length > 0 && (
-                        <div className="flex flex-wrap gap-2">
-                          {entry.logged.map((logged) => {
-                            const question = questionById(logged.questionId);
-                            return (
-                              <l-chip kind="primary" key={logged.questionId}>
-                                {question?.title}: {logged.values.join(", ")} · logged
-                              </l-chip>
-                            );
-                          })}
-                        </div>
-                      )}
-                      {entry.matchCount !== undefined && (
-                        <p className="mar-0 font-semi txt-blue-100">
-                          {entry.matchCount.toLocaleString()} suppliers matching your need
-                        </p>
-                      )}
-                    </div>
-                  );
-                }
-                if (entry.kind === "done") {
-                  return (
-                    <l-panel key={entry.id}>
-                      <div className="done-card">
-                        <span className="done-mark">
-                          <ThinkingIndicator state="done" size={26} />
-                        </span>
-                        {entry.routed ? (
-                          <>
-                            <h3 className="done-title mar-0">
-                              This need is quoted by Deep Drawing Services
-                            </h3>
-                            <p className="mar-0 done-copy">{entry.text}</p>
-                          </>
-                        ) : (
-                          <div className="done-message">
-                            <h3 className="done-title done-matched mar-0">20 Suppliers Matched!</h3>
-                            <p className="mar-0 done-copy">Curated from your inputs.</p>
-                          </div>
-                        )}
-                        <div className="done-actions">
-                          <button kind="neutral" className="done-restart" onClick={reset}>
-                            <l-icon name="arrow-rotate-left" aria-hidden="true" />
-                            <span>Restart search</span>
-                          </button>
-                          <button kind="primary" className="done-close" onClick={() => setAgentOpen(false)}>
-                            Close agent
-                          </button>
-                        </div>
-                      </div>
-                    </l-panel>
-                  );
-                }
-                return (
-                  <AskBlock
-                    key={entry.id}
-                    ask={entry.ask}
-                    status={entry.status}
-                    answer={entry.answer}
-                    picked={picked}
-                    onSelect={selectOption}
-                    onSubmit={submitPicked}
-                    onSkip={() => answerActive([], true)}
-                    onEdit={entry.status === "active" ? undefined : () => reopenAsk(entry.id)}
-                  />
-                );
-              })}
-
-              {thinking && !browseAsks && (
-                <div className="thinking-row">
-                  <ThinkingIndicator label="Matching suppliers" />
-                  <small>Matching suppliers…</small>
-                </div>
-              )}
-            </div>
-            </div>
-
-            {activeAsk && (
-              <div className="agent-footer">
-                {FREE_TEXT_ENABLED && (
-                  <form className="composer flex gap-2 align-items-center" onSubmit={submitDraft}>
-                    <fieldset className="flex-1">
-                      <input
-                        type="text"
-                        value={draft}
-                        aria-label="Your answer"
-                        placeholder={
-                          !started
-                            ? "Write a message…"
-                            : hasActiveAsk
-                              ? "Tap an option above, or type your own answer…"
-                              : "Add anything else about your need…"
-                        }
-                        onChange={(event) => setDraft(event.target.value)}
-                      />
-                    </fieldset>
-                    <button kind="primary" type="submit" disabled={thinking}>
-                      <l-icon name="paper-plane" /> Send
-                    </button>
-                  </form>
-                )}
-                {/* Footer toolbar, per the reference: collapse, back, skip,
-                    undo, and the all-questions accordion. */}
-                <div className="answer-actions">
-                  <button
-                    className="ghost-button answer-tool"
-                    type="button"
-                    title={`Close Smart Filters — ${OPT_OUT_HINT}`}
-                    aria-label="Close Smart Filters"
-                    onClick={closeChat}
-                  >
-                    <l-icon name="angle-left" aria-hidden="true" />
-                  </button>
-                  <button
-                    className="define-back"
-                    type="button"
-                    disabled={!canGoBack || browseAsks}
-                    onClick={goBack}
-                  >
-                    Back
-                  </button>
-                  <button
-                    className="define-skip"
-                    type="button"
-                    title="Done answering — back to the results"
-                    onClick={closeChat}
-                  >
-                    Done
-                  </button>
-                  <button
-                    className="define-tool"
-                    type="button"
-                    title="Reset your agent"
-                    aria-label="Reset your agent"
-                    onClick={reset}
-                  >
-                    <l-icon name="arrow-rotate-left" aria-hidden="true" />
-                  </button>
-                  <button
-                    className="define-tool"
-                    type="button"
-                    title={browseAsks ? "Expand questions" : "All questions"}
-                    aria-label={browseAsks ? "Expand questions" : "All questions"}
-                    aria-pressed={browseAsks}
-                    onClick={() => setBrowseAsks((open) => !open)}
-                  >
-                    <l-icon name="list-ul" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
+          <SmartFilterRail onDone={closeChat} />
         </section>
         )}
 
-        {!isProfile && (
-          <PaneResizer variable="--define-width" edge="left" label="Resize the define column" />
-        )}
-
-        {/* Center: supplier results, or a company profile when one is open. */}
-        <section className="pane" aria-label="Supplier results">
-          {children}
-        </section>
-
-        {!agentOpen && (
+        {!isProfile && !agentOpen && (
           <button
             type="button"
             className="agent-tab"
@@ -908,11 +730,21 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
             Open Smart Filters
           </button>
         )}
+
+        {!isProfile && agentOpen && (
+          <PaneResizer variable="--define-width" edge="left" label="Resize the define column" />
+        )}
+
+        {/* Center: supplier results, or a company profile when one is open. */}
+        <section className="pane" aria-label="Supplier results">
+          {children}
+        </section>
+
+        <FloatingShortlist />
       </main>
       <button type="button" className="phone-refine" onClick={openDefine}>
         <l-icon name="sparkles" fill aria-hidden="true" /> Refine
       </button>
-      <FloatingShortlist />
     </div>
     </SourcingProvider>
   );

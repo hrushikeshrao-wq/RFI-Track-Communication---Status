@@ -3,6 +3,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useLayoutEffect, useRef, useState } from "react";
+import { ContactSupplierModal } from "@/components/contact-supplier-modal";
+import { LoginScreen } from "@/components/login-screen";
+import { ShortlistModal } from "@/components/shortlist-modal";
+import { useSourcing } from "@/components/sourcing-context";
 import { SupplierLogo } from "@/components/supplier-logo";
 import { BASE_PATH } from "@/lib/base-path";
 import { RAIL_LIMIT, type Supplier } from "@/lib/suppliers";
@@ -22,8 +26,8 @@ type SupplierCardProps = {
 
 /** Category keywords bolded inside descriptions, as on the reference SRP card. */
 function emphasize(text: string): React.ReactNode[] {
-  return text.split(/(stampings?|services?)/i).map((part, index) =>
-    /^(stampings?|services?)$/i.test(part) ? <strong key={index}>{part}</strong> : part,
+  return text.split(/(alumin(?:um|ium)(?:\s+alloys)?)/i).map((part, index) =>
+    /^(alumin(?:um|ium)(?:\s+alloys)?)$/i.test(part) ? <strong key={index}>{part}</strong> : part,
   );
 }
 
@@ -105,12 +109,30 @@ export function CapabilityRow({ capabilities }: { capabilities: string[] }) {
 export function SupplierCard({
   supplier,
   added,
-  recommended = false,
   addDisabled = false,
   onToggleAdd,
   matchPills,
 }: SupplierCardProps) {
+  const { requirements } = useSourcing();
   const [expanded, setExpanded] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const [shortlistOpen, setShortlistOpen] = useState(false);
+  const [registered, setRegistered] = useState(false);
+  const [gate, setGate] = useState<null | "save" | "contact">(null);
+
+  const continueAfterGate = (next: "save" | "contact") => {
+    if (next === "save") setShortlistOpen(true);
+    else setContactOpen(true);
+  };
+
+  const requireRegistration = (next: "save" | "contact") => {
+    if (registered) {
+      continueAfterGate(next);
+      return;
+    }
+    setGate(next);
+  };
   const clampable = supplier.description.length > 180;
   const media = supplier.media[0];
 
@@ -122,6 +144,7 @@ export function SupplierCard({
           <SupplierLogo name={supplier.name} size={40} />
         </div>
         <div className="card-identity flex-1">
+          {supplier.sponsored && <div className="card-sponsored">Sponsored</div>}
           <div className="flex align-items-center gap-2">
             <Link
               href={`/supplier/${supplier.id}/`}
@@ -140,6 +163,9 @@ export function SupplierCard({
                 title="Verified supplier"
               />
             )}
+            {supplier.topResponder && (
+              <span className="top-responder">Top Responder</span>
+            )}
           </div>
           <Link
             href={`/supplier/${supplier.id}/`}
@@ -151,34 +177,40 @@ export function SupplierCard({
           </Link>
         </div>
         <div className="card-actions flex align-items-center gap-2 flex-shrink-0">
-          {/* The wrapper carries the hover note: a disabled button can't
-              take the pointer itself. */}
+          <button
+            type="button"
+            className="card-quiet"
+            aria-pressed={saved}
+            onClick={() => requireRegistration("save")}
+          >
+            <l-icon name="bookmark" aria-hidden="true" /> Save
+          </button>
           <span
             className="card-add-wrap"
-            data-tip={addDisabled ? `Your list is full — remove a supplier to add another (${RAIL_LIMIT} max)` : undefined}
+            data-tip={addDisabled ? `You can select up to ${RAIL_LIMIT} suppliers` : undefined}
           >
           <button
-            kind="primary-outline"
-            scale="small"
-            className={recommended ? "card-add is-recommended" : "card-add"}
+            type="button"
+            className={added ? "card-quiet card-select is-selected" : "card-quiet card-select"}
             aria-pressed={added}
             disabled={addDisabled}
             aria-disabled={addDisabled || undefined}
             aria-label={
-              recommended
-                ? `${supplier.name} is recommended for you — remove from selected suppliers`
-                : added
-                  ? `Remove ${supplier.name} from selected suppliers`
-                  : `Add ${supplier.name} to selected suppliers`
+              added
+                ? `Selected supplier ${supplier.name}`
+                : `Select supplier ${supplier.name}`
             }
             onClick={onToggleAdd}
           >
-            <l-icon name={added ? "check" : "plus"} />{" "}
-            {recommended ? "Recommended" : added ? "Added to List" : "Add to List"}
+            <l-icon name={added ? "circle-check" : "circle"} aria-hidden="true" />
+            <span>{added ? "Selected" : "Select"}</span>
           </button>
           </span>
-          <button kind="primary" scale="small" className="card-cta" onClick={noop}>
+          <button type="button" className="card-visit" onClick={noop}>
             Visit Website <l-icon name="arrow-up-right-from-square" />
+          </button>
+          <button type="button" className="card-contact-solid" onClick={() => requireRegistration("contact")}>
+            Contact Supplier
           </button>
         </div>
       </div>
@@ -194,7 +226,7 @@ export function SupplierCard({
         {supplier.employees && (
           <span>
             <l-icon name="users" aria-hidden="true" />
-            {supplier.employees} employees
+            {supplier.employees}
           </span>
         )}
         {supplier.revenue && (
@@ -206,14 +238,14 @@ export function SupplierCard({
         {supplier.founded && (
           <span>
             <l-icon name="calendar" aria-hidden="true" />
-            Est. {supplier.founded}
+            {supplier.founded}
           </span>
         )}
       </div>
 
       {supplier.companyTypes.length > 0 && (
         <div className="card-types">
-          <l-icon name="industry" aria-hidden="true" /> {supplier.companyTypes.join(" · ")}
+          <l-icon name="industry" aria-hidden="true" /> {supplier.companyTypes.join(" • ")}
         </div>
       )}
 
@@ -251,6 +283,31 @@ export function SupplierCard({
 
       {/* Media */}
       {media && <MediaTile kind={media} label={`${supplier.name} media`} />}
+      <LoginScreen
+        open={gate != null}
+        title="Register to continue"
+        onDismiss={() => {
+          const next = gate;
+          setRegistered(true);
+          setGate(null);
+          if (next) continueAfterGate(next);
+        }}
+      />
+      <ShortlistModal
+        open={shortlistOpen}
+        supplierCount={1}
+        onClose={() => setShortlistOpen(false)}
+        onSave={() => {
+          setSaved(true);
+          setShortlistOpen(false);
+        }}
+      />
+      <ContactSupplierModal
+        suppliers={[supplier]}
+        open={contactOpen}
+        onClose={() => setContactOpen(false)}
+        requirements={requirements.map((line) => ({ label: line.label, value: line.value }))}
+      />
     </l-panel>
   );
 }

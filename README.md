@@ -11,6 +11,7 @@ These links are for the `RFI-Track-Communication---Status-V1` branch. They stay 
 | **Modal option 2 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=2 |
 | **Modal option 3 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=3 |
 | **Modal option 4 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=4 |
+| **Modal option 5 — email suppliers** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=5 |
 | **Requests option 0** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=0 |
 | **Requests option 1** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=1 |
 | **Requests option 2** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?surface=requests&option=2 |
@@ -25,6 +26,7 @@ These links are for the `RFI-Track-Communication---Status-V1` branch. They stay 
 | **Local modal option 2** | http://127.0.0.1:9999/rfi-modal/?option=2 |
 | **Local modal option 3** | http://127.0.0.1:9999/rfi-modal/?option=3 |
 | **Local modal option 4** | http://127.0.0.1:9999/rfi-modal/?option=4 |
+| **Local modal option 5** | http://127.0.0.1:9999/rfi-modal/?option=5 |
 | **Local requests option 0** | http://127.0.0.1:9999/rfi-modal/?surface=requests&option=0 |
 | **Local requests option 1** | http://127.0.0.1:9999/rfi-modal/?surface=requests&option=1 |
 | **Local requests option 2** | http://127.0.0.1:9999/rfi-modal/?surface=requests&option=2 |

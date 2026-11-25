@@ -107,7 +107,7 @@ export function SupplierProfile({ id }: { id: string }) {
               className="card-add-wrap"
               data-tip={
                 addDisabled
-                  ? `Your list is full — remove a supplier to add another (${RAIL_LIMIT} max)`
+                  ? `You can select up to ${RAIL_LIMIT} suppliers`
                   : undefined
               }
             >
@@ -118,12 +118,12 @@ export function SupplierProfile({ id }: { id: string }) {
                 disabled={addDisabled}
                 aria-label={
                   added
-                    ? `Remove ${supplier.name} from selected suppliers`
-                    : `Add ${supplier.name} to selected suppliers`
+                    ? `Selected supplier ${supplier.name}`
+                    : `Select supplier ${supplier.name}`
                 }
                 onClick={() => toggleAdd(supplier)}
               >
-                <l-icon name={added ? "check" : "plus"} /> {added ? "Added to List" : "Add to List"}
+                <l-icon name={added ? "circle-check" : "circle"} /> {added ? "Selected" : "Select"}
               </button>
             </span>
           </div>

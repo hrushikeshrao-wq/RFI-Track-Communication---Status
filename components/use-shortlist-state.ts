@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { rankSuppliers } from "@/lib/ranked-suppliers";
+import { SPEC_FACETS, rankBySpec, type SpecState } from "@/lib/spec";
 import {
   SHORTLIST_STORAGE_KEY,
   readShortlist,
@@ -41,6 +42,7 @@ export function useShortlistState(
   query: string,
   runId: number,
   onRestore?: (snapshot: ShortlistSnapshot) => void,
+  spec?: SpecState,
 ) {
   const pathname = usePathname();
   const router = useRouter();
@@ -105,7 +107,10 @@ export function useShortlistState(
     setPendingRevealId(null);
   }, [runId]);
 
-  const ranked = useMemo(() => rankSuppliers(answers, query), [answers, query]);
+  const ranked = useMemo(
+    () => (spec ? rankBySpec(SUPPLIERS, spec) : rankSuppliers(answers, query)),
+    [answers, query, spec],
+  );
 
   const recommended = useMemo(
     () =>
@@ -170,22 +175,28 @@ export function useShortlistState(
   const clearPendingReveal = useCallback(() => setPendingRevealId(null), []);
 
   const logged = answers.filter((answer) => !answer.skipped && answer.values.length > 0);
-  const requirements: RequirementLine[] = logged.map((answer) => ({
-    label:
-      RFI_SPEC_LABELS[answer.questionId] ??
-      questionById(answer.questionId)?.title ??
-      answer.questionId,
-    value: answer.values.join(", "),
-  }));
+  const specRequirements: RequirementLine[] = spec
+    ? SPEC_FACETS.filter((facet) => spec[facet.id]).map((facet) => ({
+        label: facet.label,
+        value: spec[facet.id] as string,
+      }))
+    : [];
+  const requirements: RequirementLine[] =
+    specRequirements.length > 0
+      ? specRequirements
+      : logged.map((answer) => ({
+          label:
+            RFI_SPEC_LABELS[answer.questionId] ??
+            questionById(answer.questionId)?.title ??
+            answer.questionId,
+          value: answer.values.join(", "),
+        }));
   const answerValue = (questionId: string) =>
     logged.find((answer) => answer.questionId === questionId)?.values[0];
-  const draftPieces = [answerValue("material"), answerValue("process")].filter(
-    (value): value is string => value != null,
-  );
-  const draftTitle =
-    draftPieces.length > 0
-      ? [...draftPieces, answerValue("part") ?? "Parts"].join(" ")
-      : query;
+  const draftPieces = spec
+    ? [spec.alloy, spec.form, spec.profile].filter((value): value is string => Boolean(value))
+    : [answerValue("material"), answerValue("process")].filter((value): value is string => value != null);
+  const draftTitle = draftPieces.length > 0 ? draftPieces.join(" ") : query;
 
   return {
     railSuppliers,

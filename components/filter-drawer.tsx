@@ -16,6 +16,7 @@ const PLACEHOLDER_GROUPS = [
   "Brands",
   "Catalogs",
   "Ownership / Diversity",
+  "Video Type",
 ];
 
 type FilterDrawerProps = {
@@ -36,6 +37,8 @@ type FilterDrawerProps = {
   onLocation: (next: string) => void;
   selectedCount: number;
   onClearAll: () => void;
+  searchSaved?: boolean;
+  onSaveSearch?: () => void;
 };
 
 /** Facet rail, opened from "All Filters" — the classic filters beside the agent. */
@@ -55,8 +58,10 @@ export function FilterDrawer({
   onLocation,
   selectedCount,
   onClearAll,
+  searchSaved = false,
+  onSaveSearch,
 }: FilterDrawerProps) {
-  const [expanded, setExpanded] = useState<string[]>([]);
+  const [expanded, setExpanded] = useState<string[]>(["verified"]);
 
   useEffect(() => {
     if (!open) return;
@@ -94,8 +99,8 @@ export function FilterDrawer({
           <button type="button" className="drawer-link" onClick={onClearAll}>
             Clear All
           </button>
-          <button type="button" className="drawer-link drawer-link-primary">
-            Save Search
+          <button type="button" className="drawer-link drawer-link-primary" onClick={onSaveSearch}>
+            {searchSaved ? "Search saved" : "Save Search"}
           </button>
         </div>
 
@@ -118,8 +123,18 @@ export function FilterDrawer({
         )}
 
         <div className="drawer-body">
-          <section className="drawer-section">
-            <h5 className="drawer-section-title mar-0">Verified Suppliers</h5>
+          <section className="drawer-section drawer-accordion">
+            <button
+              type="button"
+              className="drawer-row"
+              aria-expanded={expanded.includes("verified")}
+              onClick={() => toggleSection("verified")}
+            >
+              <span>Verified Suppliers</span>
+              <l-icon name={expanded.includes("verified") ? "angle-down" : "angle-up"} aria-hidden="true" />
+            </button>
+            {expanded.includes("verified") && (
+            <>
             <label className="drawer-switch">
               <input
                 type="checkbox"
@@ -146,10 +161,12 @@ export function FilterDrawer({
                 type="search"
                 value={location}
                 aria-label="Filter by location"
-                placeholder="Location by City, State, or ZIP"
+                placeholder="Location by State, City, or Zip"
                 onChange={(event) => onLocation(event.target.value)}
               />
             </label>
+            </>
+            )}
           </section>
 
           {groups.map((group) => {

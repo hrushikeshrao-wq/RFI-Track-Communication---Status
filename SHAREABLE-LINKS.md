@@ -18,6 +18,7 @@ A separate page for comparing contact-modal options.
 - Option 2 — email suppliers, copied from option 1: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=2
 - Option 3 — email suppliers, copied from option 2: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=3
 - Option 4 — email suppliers, copied from option 3: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=4
+- Option 5 — email suppliers, copied from option 3: https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=5
 
 Local:
 
@@ -27,6 +28,7 @@ Local:
 - http://127.0.0.1:9999/rfi-modal/?option=2
 - http://127.0.0.1:9999/rfi-modal/?option=3
 - http://127.0.0.1:9999/rfi-modal/?option=4
+- http://127.0.0.1:9999/rfi-modal/?option=5
 
 ## Requests
 

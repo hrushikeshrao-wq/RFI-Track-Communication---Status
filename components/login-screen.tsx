@@ -10,6 +10,7 @@ type LoginScreenProps = {
   open: boolean;
   /** Any click anywhere stands in for a completed login. */
   onDismiss: () => void;
+  title?: string;
 };
 
 /**
@@ -17,7 +18,7 @@ type LoginScreenProps = {
  * authenticates: this is the prototype's stand-in for the real Thomas login,
  * so a click anywhere returns the buyer to the form as a signed-in user.
  */
-export function LoginScreen({ open, onDismiss }: LoginScreenProps) {
+export function LoginScreen({ open, onDismiss, title = "Login to Thomas" }: LoginScreenProps) {
   if (!open) return null;
 
   return (
@@ -38,7 +39,7 @@ export function LoginScreen({ open, onDismiss }: LoginScreenProps) {
         />
 
         <div className="login-form">
-          <h1 className="login-title mar-0">Login to Thomas</h1>
+          <h1 className="login-title mar-0">{title}</h1>
 
           {/* Notched border label, as the real login draws it. */}
           <div className="login-field">

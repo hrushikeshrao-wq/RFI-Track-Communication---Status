@@ -8,11 +8,12 @@ import { RfiEmailModal } from "@/components/rfi-email-modal";
 import { RfiEmailModalOption2 } from "@/components/rfi-email-modal-option-2";
 import { RfiEmailModalOption3 } from "@/components/rfi-email-modal-option-3";
 import { RfiEmailModalOption4 } from "@/components/rfi-email-modal-option-4";
+import { RfiEmailModalOption5 } from "@/components/rfi-email-modal-option-5";
 import { contactableOnly, SUPPLIERS } from "@/lib/suppliers";
 import "./rfi-modal.css";
 
 type Surface = "modal" | "requests" | "email";
-type ModalOption = 0 | 1 | 2 | 3 | 4;
+type ModalOption = 0 | 1 | 2 | 3 | 4 | 5;
 
 const DEMO_SUPPLIERS = contactableOnly(SUPPLIERS).slice(0, 3);
 
@@ -20,7 +21,7 @@ function selectionFromLocation(): { surface: Surface; option: ModalOption } {
   const params = new URLSearchParams(window.location.search);
   const value = params.get("option");
   const option: ModalOption =
-    value === "1" ? 1 : value === "2" ? 2 : value === "3" ? 3 : value === "4" ? 4 : 0;
+    value === "1" ? 1 : value === "2" ? 2 : value === "3" ? 3 : value === "4" ? 4 : value === "5" ? 5 : 0;
   const surfaceParam = params.get("surface");
   const surface: Surface =
     surfaceParam === "requests" ? "requests" : surfaceParam === "email" ? "email" : "modal";
@@ -28,10 +29,10 @@ function selectionFromLocation(): { surface: Surface; option: ModalOption } {
 }
 
 /**
- * Prototype switcher. Modal holds contact options 0–4.
+ * Prototype switcher. Modal holds contact options 0–5.
  * Requests holds the buyer account requests screen as Options 0–2.
  * Email holds the buyer email thread as Options 0 and 1.
- * `?option=0` through `?option=4` stay the modal variants.
+ * `?option=0` through `?option=5` stay the modal variants.
  * `?surface=requests&option=0` opens the requests screen. Option 1 shortens the status bars. Option 2 uses the circle stepper.
  * `?surface=email&option=0` opens the email thread. Option 1 is a copy of Option 0.
  */
@@ -81,7 +82,7 @@ export default function RfiModalPrototypePage() {
       <div className="rfi-option-bar" role="toolbar" aria-label="Prototype options">
         <div className="rfi-option-group" role="group" aria-label="Modal">
           <span className="rfi-option-name">Modal</span>
-          {([0, 1, 2, 3, 4] as const).map((value) => (
+          {([0, 1, 2, 3, 4, 5] as const).map((value) => (
             <button
               key={value}
               type="button"
@@ -138,8 +139,10 @@ export default function RfiModalPrototypePage() {
         <RfiEmailModalOption2 open={open} onClose={() => setOpen(false)} />
       ) : option === 3 ? (
         <RfiEmailModalOption3 open={open} onClose={() => setOpen(false)} />
-      ) : (
+      ) : option === 4 ? (
         <RfiEmailModalOption4 open={open} onClose={() => setOpen(false)} />
+      ) : (
+        <RfiEmailModalOption5 open={open} onClose={() => setOpen(false)} />
       )}
 
       {surface === "modal" && !open ? (

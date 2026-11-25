@@ -58,7 +58,10 @@ export function SiteNavbar({ query, onSearch }: SiteNavbarProps) {
             Claim Your Company
           </a>
           <a href="#" onClick={noop}>
-            <l-icon name="circle-user" /> Account <l-icon name="angle-down" />
+            Log In
+          </a>
+          <a href="#" className="site-signup" onClick={noop}>
+            Sign Up
           </a>
         </div>
       </nav>
@@ -67,7 +70,7 @@ export function SiteNavbar({ query, onSearch }: SiteNavbarProps) {
           type="text"
           value={draft}
           aria-label="Search suppliers"
-          placeholder="Search stamping services…"
+          placeholder="Search suppliers…"
           onChange={(event) => setDraft(event.target.value)}
         />
         <button type="submit" className="site-search-btn" aria-label="Search">

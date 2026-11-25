@@ -4,7 +4,6 @@ import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import { FilterDrawer, type FilterGroup } from "@/components/filter-drawer";
 import { useSourcing } from "@/components/sourcing-context";
 import { SupplierCard } from "@/components/supplier-card";
-import { ThomasLeadAd } from "@/components/thomas-lead-ad";
 import {
   capabilitiesForMaterials,
   certificationsForAnswers,
@@ -16,11 +15,11 @@ import {
   questionById,
   candidatesFor,
   LOCATION_QUESTION_ID,
-  simulatedMatchCount,
 } from "@/lib/simulation";
-import { rankSuppliers } from "@/lib/ranked-suppliers";
+import { SPEC_FACETS, rankBySpec } from "@/lib/spec";
+import { SUPPLIERS } from "@/lib/suppliers";
 import { matchPillsFor } from "@/lib/match-pills";
-import type { Supplier } from "@/lib/suppliers";
+import { CATEGORY_LABEL, type Supplier } from "@/lib/suppliers";
 
 const PAGE_SIZE = 25;
 
@@ -48,7 +47,6 @@ const FACET_LABELS: Record<string, string> = {
 export function SupplierResults() {
   const {
     answers,
-    query,
     removeAnswer: onRemoveAnswer,
     applyFilterAnswer: onApplyFilterAnswer,
     clearMappedAnswers: onClearMappedAnswers,
@@ -58,6 +56,12 @@ export function SupplierResults() {
     railFull,
     pendingRevealId,
     clearPendingReveal,
+    spec,
+    setSpec,
+    resetSpec,
+    matchTotal,
+    searchSaved,
+    saveSearch,
   } = useSourcing();
   const railIds = useMemo(
     () => new Set(railSuppliers.map((supplier) => supplier.id)),
@@ -98,19 +102,14 @@ export function SupplierResults() {
     };
   }, []);
 
-  /** Suppliers in the category still matching — the number the buyer is shown. */
-  const matchTotal = simulatedMatchCount(answers);
-
-  // Exact matches rank above any near matches the rail was padded with, so a
-  // relaxed answer never pushes a supplier that meets everything down the list.
   const results = useMemo(() => {
     const types = localFacetPicks.companyType ?? [];
-    return rankSuppliers(answers, query).filter(
+    return rankBySpec(SUPPLIERS, spec).filter(
       (supplier) =>
         (!verifiedOnly || supplier.verified === true) &&
         (types.length === 0 || types.some((type) => supplier.companyTypes.includes(type))),
     );
-  }, [answers, query, verifiedOnly, localFacetPicks]);
+  }, [spec, verifiedOnly, localFacetPicks]);
 
   // A new answer or filter reshuffles the list, so the buyer starts back on
   // page one rather than stranded past the end of a shorter set.
@@ -118,7 +117,13 @@ export function SupplierResults() {
     setPage(1);
   }, [results]);
 
-  const pageCount = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
+  const sortedResults = results;
+  const specChips = SPEC_FACETS.filter((facet) => spec[facet.id]).map((facet) => ({
+    ...facet,
+    value: spec[facet.id] as string,
+  }));
+  const [distanceOpen, setDistanceOpen] = useState(false);
+  const pageCount = Math.max(1, Math.ceil(sortedResults.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
   const pageStart = (currentPage - 1) * PAGE_SIZE;
 
@@ -172,6 +177,7 @@ export function SupplierResults() {
     setLocalFacetPicks({});
     if (locationTimer.current) clearTimeout(locationTimer.current);
     onClearMappedAnswers();
+    resetSpec();
   };
 
   const commitLocation = (value: string) => {
@@ -248,7 +254,7 @@ export function SupplierResults() {
   useEffect(() => {
     if (!pendingRevealId) return;
     const id = pendingRevealId;
-    const index = results.findIndex((supplier) => supplier.id === id);
+    const index = sortedResults.findIndex((supplier) => supplier.id === id);
     clearPendingReveal();
     if (index < 0) return;
     revealTarget.current = id;
@@ -259,7 +265,7 @@ export function SupplierResults() {
     } else {
       setRevealNonce((nonce) => nonce + 1);
     }
-  }, [pendingRevealId, results, currentPage, clearPendingReveal]);
+  }, [pendingRevealId, sortedResults, currentPage, clearPendingReveal]);
 
   useEffect(() => {
     const id = revealTarget.current;
@@ -282,39 +288,75 @@ export function SupplierResults() {
       <div className="results-center">
         <div className="pane-scroll" ref={scrollRef}>
       <div className="results-header">
-        <div className="results-meta">
-          <div className="results-headline">
-            <h3 className="mar-0">Suppliers that match your spec</h3>
-            <p className="mar-0 txt-smaller txt-darkblue-75">
-              <span className="txt-blue-100 font-semi">{matchTotal.toLocaleString()}</span>{" "}
-              verified suppliers match your query.
+        <div className="spec-header">
+          <div>
+            <h1 className="spec-title mar-0">Suppliers that match your spec</h1>
+            <p className="spec-count mar-0">
+              <strong>{matchTotal.toLocaleString()}</strong> verified suppliers match your query.
             </p>
           </div>
           <button
             type="button"
-            className="all-filters"
+            className="spec-all-filters"
             aria-label="All Filters"
             onClick={() => setFiltersOpen(true)}
           >
             <l-icon name="sliders" aria-hidden="true" />
-            <span className="all-filters-label">All Filters</span>
-            {filterCount > 0 && <span className="all-filters-count">{filterCount}</span>}
+            All Filters
+            <span className="spec-all-filters-count">{specChips.length + filterCount}</span>
           </button>
         </div>
-        {/* Logged answers echoed as removable pills, each under the facet it
-            narrowed — the spec stays visible without reopening the drawer. */}
-        {facets.length > 0 && (
-          <div className="answer-pill-row">
-            {facets.map((facet) => (
-              <div className="answer-pill-stack" key={facet.id}>
-                <span className="answer-pill-label">{facet.label}</span>
-                <span className="answer-pill">
-                  {facet.value}
+        {specChips.length > 0 && (
+          <div className="spec-chips">
+            {specChips.map((chip) => (
+              <div className="spec-chip-col" key={chip.id}>
+                <span className="spec-chip-label">{chip.label}</span>
+                <span className="spec-chip">
+                  {chip.id === "location" ? (
+                    <>
+                      {chip.value.split("|")[0].trim()}
+                      <span className="spec-chip-divider" aria-hidden="true">|</span>
+                      <span className="spec-distance">
+                        <button
+                          type="button"
+                          className="spec-distance-btn"
+                          aria-expanded={distanceOpen}
+                          aria-label="Change search distance"
+                          onClick={() => setDistanceOpen((open) => !open)}
+                        >
+                          {chip.value.split("|")[1]?.trim() ?? chip.value} <l-icon name="angle-down" aria-hidden="true" />
+                        </button>
+                        {distanceOpen && (
+                          <span className="spec-distance-menu" role="listbox" aria-label="Search distance">
+                            {DISTANCES.map((distance) => (
+                              <button
+                                key={distance}
+                                type="button"
+                                role="option"
+                                aria-selected={chip.value.endsWith(distance)}
+                                onClick={() => {
+                                  setSpec("location", `91730 | ${distance}`);
+                                  setDistanceOpen(false);
+                                }}
+                              >
+                                {distance}
+                              </button>
+                            ))}
+                          </span>
+                        )}
+                      </span>
+                    </>
+                  ) : (
+                    chip.value
+                  )}
                   <button
                     type="button"
-                    className="answer-pill-remove"
-                    aria-label={`Remove ${facet.title}: ${facet.value}`}
-                    onClick={() => onRemoveAnswer(facet.id)}
+                    className="spec-chip-remove"
+                    aria-label={`Remove ${chip.label}: ${chip.value}`}
+                    onClick={() => {
+                      setSpec(chip.id, null);
+                      setDistanceOpen(false);
+                    }}
                   >
                     <l-icon name="xmark" aria-hidden="true" />
                   </button>
@@ -327,7 +369,7 @@ export function SupplierResults() {
         <div className="results-stage">
         <div className="results-main">
         <div className="results-list">
-          {results.slice(pageStart, pageStart + PAGE_SIZE).map((supplier) => (
+          {sortedResults.slice(pageStart, pageStart + PAGE_SIZE).map((supplier) => (
             <Fragment key={supplier.id}>
               <div
                 className={
@@ -348,7 +390,7 @@ export function SupplierResults() {
               </div>
             </Fragment>
           ))}
-          {results.length === 0 && (
+          {sortedResults.length === 0 && (
             <l-panel class="results-row-full">
               <p className="mar-0">
                 No suppliers match every requirement yet. Try skipping the last answer or widening a
@@ -358,6 +400,11 @@ export function SupplierResults() {
           )}
           {pageCount > 1 && (
             <nav className="results-row-full pagination" aria-label="Results pages">
+              <p className="pagination-count">
+                {sortedResults.length === 0 ? 0 : pageStart + 1} to{" "}
+                {Math.min(pageStart + PAGE_SIZE, sortedResults.length)} of {matchTotal.toLocaleString()}
+              </p>
+              <div className="pagination-pages">
               <button
                 type="button"
                 className="page-nav"
@@ -386,12 +433,12 @@ export function SupplierResults() {
               >
                 Next <l-icon name="arrow-right" aria-hidden="true" />
               </button>
+              </div>
             </nav>
           )}
         </div>
-        <RelatedSearches suppliers={results} />
+        <RelatedSearches />
         </div>
-        <ThomasLeadAd />
         </div>
       </div>
       </div>
@@ -400,8 +447,14 @@ export function SupplierResults() {
       <FilterDrawer
         open={filtersOpen}
         onClose={() => setFiltersOpen(false)}
-        applied={facets}
-        onRemoveApplied={onRemoveAnswer}
+        applied={[
+          ...specChips.map((chip) => ({ id: chip.id, title: chip.label, value: chip.value })),
+          ...facets,
+        ]}
+        onRemoveApplied={(id) => {
+          if (SPEC_FACETS.some((facet) => facet.id === id)) setSpec(id as (typeof SPEC_FACETS)[number]["id"], null);
+          else onRemoveAnswer(id);
+        }}
         groups={filterGroups}
         picked={facetPicks}
         onTogglePicked={toggleFacet}
@@ -411,32 +464,29 @@ export function SupplierResults() {
         onPartnerOnly={setPartnerOnly}
         location={locationDraft}
         onLocation={onLocation}
-        selectedCount={filterCount}
+        selectedCount={filterCount + specChips.length}
         onClearAll={clearFilters}
+        searchSaved={searchSaved}
+        onSaveSearch={saveSearch}
       />
     </>
   );
 }
 
-const RELATED_LIMIT = 12;
+const DISTANCES = ["25 mi", "50 mi", "100 mi", "250 mi"];
 
-/** Capability terms from the current result set, shown after the list. */
-function RelatedSearches({ suppliers }: { suppliers: Supplier[] }) {
-  const terms = useMemo(() => {
-    const seen = new Set<string>();
-    const next: string[] = [];
-    for (const supplier of suppliers) {
-      for (const capability of supplier.capabilities) {
-        if (seen.has(capability)) continue;
-        seen.add(capability);
-        next.push(capability);
-        if (next.length >= RELATED_LIMIT) return next;
-      }
-    }
-    return next;
-  }, [suppliers]);
+const RELATED_SEARCHES = [
+  "Aluminum Alloys",
+  "Aluminum Bars",
+  "Aluminum Extrusions",
+  "Aluminum Scrap",
+  "Aluminum Shapes",
+  "Aluminum Sheets",
+];
 
-  if (terms.length === 0) return null;
+/** Related searches under the Aluminum results, matching the current page. */
+function RelatedSearches() {
+  const terms = RELATED_SEARCHES;
 
   return (
     <section className="related-searches" aria-label="Related searches">
