@@ -12,20 +12,30 @@
   display: flex;
   align-items: center;
   gap: 2px;
+  max-width: calc(100vw - 24px);
   padding: 3px;
   border-radius: 999px;
   background: #16191d;
   color: #fff;
   box-shadow: 0 6px 18px rgb(0 0 0 / 0.22);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.rfi-option-bar::-webkit-scrollbar {
+  display: none;
 }
 
 .rfi-option-group {
   display: flex;
   align-items: center;
+  flex: none;
   gap: 2px;
 }
 
 .rfi-option-name {
+  flex: none;
   padding: 0 6px 0 10px;
   color: #8d99a6;
   font-size: 11px;
@@ -43,6 +53,7 @@
 }
 
 .rfi-option-bar button {
+  flex: none;
   border: 0;
   border-radius: 999px;
   background: transparent;

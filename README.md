@@ -2,8 +2,18 @@
 
 These links are for the `RFI-Track-Communication---Status-V1` branch. They stay separate from the earlier `right-rail-h3-h4-ai-strategic-sourcing-v1-Hrushi` prototype.
 
+## Local prototype
+
+http://127.0.0.1:9999/
+
+Modal option 5: http://127.0.0.1:9999/rfi-modal/?option=5
+
+Start it with `pnpm exec next dev --hostname 127.0.0.1 --port 9999`.
+
 | | |
 | --- | --- |
+| **Local prototype** | http://127.0.0.1:9999/ |
+| **Local modal option 5** | http://127.0.0.1:9999/rfi-modal/?option=5 |
 | **Prototype for stakeholders** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/ |
 | **Modal popup prototype** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/ |
 | **Modal option 0 — current experience** | https://hrushikeshrao-wq.github.io/RFI-Track-Communication---Status/rfi-modal/?option=0 |

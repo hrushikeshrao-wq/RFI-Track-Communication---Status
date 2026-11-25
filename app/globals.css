@@ -4112,6 +4112,15 @@ body.is-resizing-panes {
   color: #0e6aed;
 }
 
+.select-ring {
+  width: 14px;
+  height: 14px;
+  flex: none;
+  border: 1.5px solid currentColor;
+  border-radius: 999px;
+  box-sizing: border-box;
+}
+
 .select-box {
   width: 14px;
   height: 14px;

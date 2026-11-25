@@ -202,7 +202,11 @@ export function SupplierCard({
             }
             onClick={onToggleAdd}
           >
-            <l-icon name={added ? "circle-check" : "circle"} aria-hidden="true" />
+            {added ? (
+              <l-icon name="circle-check" aria-hidden="true" />
+            ) : (
+              <span className="select-ring" aria-hidden="true" />
+            )}
             <span>{added ? "Selected" : "Select"}</span>
           </button>
           </span>

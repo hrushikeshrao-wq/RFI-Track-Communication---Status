@@ -123,7 +123,8 @@ export function SupplierProfile({ id }: { id: string }) {
                 }
                 onClick={() => toggleAdd(supplier)}
               >
-                <l-icon name={added ? "circle-check" : "circle"} /> {added ? "Selected" : "Select"}
+                {added ? <l-icon name="circle-check" /> : <span className="select-ring" aria-hidden="true" />}{" "}
+                {added ? "Selected" : "Select"}
               </button>
             </span>
           </div>
