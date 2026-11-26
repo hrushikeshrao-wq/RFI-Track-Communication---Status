@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { BASE_PATH } from "@/lib/base-path";
 import { RfiAssuranceRail } from "@/components/rfi-assurance-rail";
 import { RfiSuccessPopup } from "@/components/rfi-success-popup";
+import { SupplierLogo } from "@/components/supplier-logo";
 
 function formatFileSize(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
@@ -40,6 +41,14 @@ const RECIPIENTS = [
 const MESSAGE_GUIDE =
   "Hello,\n\nDescribe the products, services or capabilities you need, quantities, materials and any questions you have.";
 
+const DEMO_SUBJECT = "Stainless Steel Progressive Die Stamped Brackets";
+
+export type RfiModalRecipient = {
+  id: string;
+  name: string;
+  email?: string;
+};
+
 function twoDaysAheadValue() {
   const date = new Date();
   date.setDate(date.getDate() + 2);
@@ -48,20 +57,113 @@ function twoDaysAheadValue() {
   return `${date.getFullYear()}-${month}-${day}`;
 }
 
+function requirementRowTops(pills: HTMLElement[]) {
+  const tops: number[] = [];
+  for (const pill of pills) {
+    const top = pill.getBoundingClientRect().top;
+    if (tops.every((row) => Math.abs(row - top) > 2)) tops.push(top);
+  }
+  return tops.sort((left, right) => left - right);
+}
+
+function RequirementPills({
+  requirements,
+  onRemove,
+}: {
+  requirements: string[];
+  onRemove: (requirement: string) => void;
+}) {
+  const pillsRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(requirements.length);
+  const [containerWidth, setContainerWidth] = useState(0);
+
+  useLayoutEffect(() => {
+    const root = pillsRef.current;
+    if (!root) return;
+    const observer = new ResizeObserver(() => setContainerWidth(root.clientWidth));
+    observer.observe(root);
+    return () => observer.disconnect();
+  }, []);
+
+  useLayoutEffect(() => {
+    const root = pillsRef.current;
+    if (!root || expanded) return;
+    const pills = [...root.querySelectorAll<HTMLElement>("[data-req-pill]")];
+    pills.forEach((pill) => {
+      pill.hidden = false;
+    });
+    const tops = requirementRowTops(pills);
+    const count =
+      tops.length <= 2
+        ? pills.length
+        : pills.filter((pill) => pill.getBoundingClientRect().top <= tops[1] + 2).length;
+    pills.forEach((pill, index) => {
+      pill.hidden = index >= count;
+    });
+    setVisibleCount(count);
+  }, [requirements, expanded, containerWidth]);
+
+  const hiddenCount = expanded ? 0 : Math.max(0, requirements.length - visibleCount);
+
+  return (
+    <>
+      <div className="rfi-req-pills" ref={pillsRef}>
+        {requirements.map((requirement, index) => (
+          <span
+            className="rfi-req"
+            data-req-pill=""
+            hidden={!expanded && index >= visibleCount}
+            key={requirement}
+          >
+            {requirement}
+            <button
+              type="button"
+              aria-label={`Remove ${requirement}`}
+              onClick={() => onRemove(requirement)}
+            >
+              <CloseIcon />
+            </button>
+          </span>
+        ))}
+      </div>
+      {hiddenCount > 0 ? (
+        <button type="button" className="rfi-req-more" onClick={() => setExpanded(true)}>
+          +{hiddenCount} more
+        </button>
+      ) : null}
+    </>
+  );
+}
+
 type RfiEmailModalProps = {
   open: boolean;
   onClose: () => void;
   /** Font variable classes for the Guided artifact type system. */
   className?: string;
+  /** Selected suppliers for the To row. The demo list is used when omitted. */
+  recipients?: RfiModalRecipient[];
+  /** Requirement tags under the message. The demo list is used when omitted. */
+  requirements?: string[];
+  /** Subject line. The demo subject is used when omitted. */
+  subject?: string;
 };
 
 /**
  * Option 5 of the modal prototype. Starts as a copy of Option 3 so it can
  * diverge without changing Options 0–4.
  */
-export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModalProps) {
-  const [requirements, setRequirements] = useState(INITIAL_REQUIREMENTS);
-  const [recipients, setRecipients] = useState(RECIPIENTS);
+export function RfiEmailModalOption5({
+  open,
+  onClose,
+  className,
+  recipients: recipientSeed,
+  requirements: requirementSeed,
+  subject,
+}: RfiEmailModalProps) {
+  const requestSubject = subject?.trim() ? subject : DEMO_SUBJECT;
+  const [requirements, setRequirements] = useState(requirementSeed ?? INITIAL_REQUIREMENTS);
+  const [recipients, setRecipients] = useState(recipientSeed ?? RECIPIENTS);
   const [reachOut, setReachOut] = useState(true);
   const [verified, setVerified] = useState(false);
   const [message, setMessage] = useState("");
@@ -72,6 +174,20 @@ export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModal
   const [messageError, setMessageError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const messageRef = useRef<HTMLTextAreaElement>(null);
+  const [wasOpen, setWasOpen] = useState(open);
+  if (open !== wasOpen) {
+    setWasOpen(open);
+    if (open) {
+      setRecipients(recipientSeed ?? RECIPIENTS);
+      setRequirements(requirementSeed ?? INITIAL_REQUIREMENTS);
+      setSent(false);
+      setVerified(false);
+      setMessage("");
+      setFiles([]);
+      setConsentError(false);
+      setMessageError(false);
+    }
+  }
   const supplierCount = recipients.length;
 
   useEffect(() => {
@@ -102,7 +218,7 @@ export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModal
       <div className="rfi-scrim" role="presentation" onClick={onClose}>
         <RfiSuccessPopup
           className={[className, "rfi-success-option-5"].filter(Boolean).join(" ")}
-          subject="Stainless Steel Progressive Die Stamped Brackets"
+          subject={requestSubject}
           supplierCount={supplierCount}
           requirements={requirements}
           reachOut={reachOut}
@@ -149,7 +265,7 @@ export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModal
               <div className="rfi-pills">
                 {recipients.map((recipient) => (
                   <span className="rfi-pill" key={recipient.id}>
-                    <RecipientMark id={recipient.id} />
+                    <RecipientMark id={recipient.id} name={recipient.name} />
                     <span className="rfi-pill-name">{recipient.name}</span>
                     {recipient.email ? (
                       <span className="rfi-pill-email">{recipient.email}</span>
@@ -172,7 +288,7 @@ export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModal
 
             <div className="rfi-row">
               <span className="rfi-row-label">Subject</span>
-              <strong className="rfi-subject">Stainless Steel Progressive Die Stamped Brackets</strong>
+              <strong className="rfi-subject">{requestSubject}</strong>
             </div>
 
             <label className={`rfi-body${messageError ? " is-invalid" : ""}`}>
@@ -193,22 +309,12 @@ export function RfiEmailModalOption5({ open, onClose, className }: RfiEmailModal
 
             <div className="rfi-reqs">
               <p className="rfi-reqs-label">{requirements.length} requirements attached to your request</p>
-              <div className="rfi-req-pills">
-                {requirements.map((requirement) => (
-                  <span className="rfi-req" key={requirement}>
-                    {requirement}
-                    <button
-                      type="button"
-                      aria-label={`Remove ${requirement}`}
-                      onClick={() =>
-                        setRequirements((current) => current.filter((item) => item !== requirement))
-                      }
-                    >
-                      <CloseIcon />
-                    </button>
-                  </span>
-                ))}
-              </div>
+              <RequirementPills
+                requirements={requirements}
+                onRemove={(requirement) =>
+                  setRequirements((current) => current.filter((item) => item !== requirement))
+                }
+              />
             </div>
 
             {files.length > 0 ? (
@@ -467,7 +573,14 @@ function PeopleIcon() {
   );
 }
 
-function RecipientMark({ id }: { id: string }) {
+function RecipientMark({ id, name }: { id: string; name: string }) {
+  if (id !== "sri" && id !== "ronson" && id !== "arcade") {
+    return (
+      <span className="rfi-mark" aria-hidden="true">
+        <SupplierLogo name={name} size={18} />
+      </span>
+    );
+  }
   if (id === "sri") {
     return (
       <span className="rfi-mark rfi-mark-sri" aria-hidden="true">

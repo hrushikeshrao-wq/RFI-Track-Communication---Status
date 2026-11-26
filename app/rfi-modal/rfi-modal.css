@@ -438,9 +438,12 @@
   flex: 0 0 auto;
 }
 
-.rfi-mark svg {
+.rfi-mark svg,
+.rfi-mark img {
   width: 16px;
   height: 16px;
+  display: block;
+  object-fit: cover;
 }
 
 .rfi-mark-ronson {
@@ -915,6 +918,42 @@
 
 .rfi-dialog:is([data-modal-option="3"], [data-modal-option="4"], [data-modal-option="5"]) .rfi-wordmark {
   margin: var(--l-space-5) 0 0;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-row-to .rfi-pills {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-row-to .rfi-pills::-webkit-scrollbar {
+  display: none;
+  height: 0;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-req-pills {
+  flex-wrap: wrap;
+  overflow: visible;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-req-more {
+  display: inline-block;
+  margin: 6px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--rfi-blue);
+  font-size: 11px;
+  font-weight: var(--l-font-weight-semibold);
+  line-height: 16px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.rfi-dialog[data-modal-option="5"] .rfi-req-more:hover,
+.rfi-dialog[data-modal-option="5"] .rfi-req-more:focus-visible {
+  text-decoration: none;
 }
 
 .rfi-dialog[data-modal-option="5"] .rfi-tools {

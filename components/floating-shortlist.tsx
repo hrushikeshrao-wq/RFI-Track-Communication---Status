@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { RfiEmailModalOption5 } from "@/components/rfi-email-modal-option-5";
 import { SupplierLogo } from "@/components/supplier-logo";
 import { SupplierRequest } from "@/components/supplier-request";
 import { useSourcing } from "@/components/sourcing-context";
 import { RAIL_LIMIT, contactableOnly, isUncontactable, UNCONTACTABLE_NOTE } from "@/lib/suppliers";
+import "../app/rfi-modal/rfi-modal.css";
 
 /**
  * Right-side Quick Contact rail. Recommended suppliers start selected.
@@ -22,6 +24,7 @@ export function FloatingShortlist() {
     openDefine,
   } = useSourcing();
   const [requestOpen, setRequestOpen] = useState(false);
+  const [option5Open, setOption5Open] = useState(false);
   const [rfiCollapsed, setRfiCollapsed] = useState(false);
   const contactable = contactableOnly(railSuppliers);
   const recommended = railSuppliers.slice(addedCount);
@@ -135,13 +138,23 @@ export function FloatingShortlist() {
             type="button"
             className="qc-contact"
             disabled={contactable.length === 0}
-            onClick={() => setRequestOpen(true)}
+            onClick={() => setOption5Open(true)}
           >
             Contact {contactable.length} Supplier{contactable.length === 1 ? "" : "s"}
           </button>
           <p className="qc-note">You can review your draft before sending</p>
         </div>
       </aside>
+      <RfiEmailModalOption5
+        open={option5Open}
+        onClose={() => setOption5Open(false)}
+        recipients={railSuppliers.map((supplier) => ({ id: supplier.id, name: supplier.name }))}
+        requirements={requirements.map((line) => `${line.label}: ${line.value}`)}
+        subject={requirements
+          .slice(0, 3)
+          .map((line) => line.value)
+          .join(" ")}
+      />
       <SupplierRequest
         open={requestOpen}
         suppliers={contactable}

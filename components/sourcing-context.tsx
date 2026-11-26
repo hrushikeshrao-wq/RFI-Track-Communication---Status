@@ -19,6 +19,8 @@ export type SourcingContextValue = {
   spec: SpecState;
   setSpec: (id: SpecId, value: string | null) => void;
   resetSpec: () => void;
+  /** Clears every facet and starts the left-rail questions over. */
+  clearSpec: () => void;
   matchTotal: number;
   searchSaved: boolean;
   saveSearch: () => void;

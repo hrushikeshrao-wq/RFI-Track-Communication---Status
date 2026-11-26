@@ -3261,6 +3261,97 @@ body.is-resizing-panes {
   filter: brightness(0.96);
 }
 
+.smart-done-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 8px 2px 4px;
+}
+
+.smart-done-card h3 {
+  color: var(--tn-ink);
+  font-family: var(--tn-font);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.smart-done-card h3 span {
+  color: var(--tn-blue);
+}
+
+.smart-done-card p {
+  color: var(--tn-ink-2);
+  font-size: 13px;
+  line-height: 20px;
+}
+
+.smart-done-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.smart-done-actions button {
+  min-height: 40px;
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.smart-done-actions button:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--tn-outline);
+  background: #fff;
+  color: var(--tn-ink);
+}
+
+.smart-browse {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  margin: 0 0 12px;
+  padding: 12px;
+  border: 1px solid var(--tn-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--tn-ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.smart-browse-q {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.smart-browse-a,
+.smart-browse-empty {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+}
+
+.smart-browse-a {
+  color: var(--tn-blue);
+}
+
+.smart-browse-empty {
+  color: var(--tn-muted);
+}
+
 /* Live count and the way out, stacked against the header's right edge. */
 .agent-aside {
   display: flex;

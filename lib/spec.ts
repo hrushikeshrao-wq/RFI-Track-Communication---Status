@@ -63,6 +63,16 @@ export const INITIAL_SPEC: SpecState = {
   industry: "Structural",
 };
 
+/** No facets chosen — the left rail restart begins here. */
+export const EMPTY_SPEC: SpecState = {
+  location: null,
+  form: null,
+  alloy: null,
+  profile: null,
+  finish: null,
+  industry: null,
+};
+
 /** Unrefined Aluminum heading size. */
 export const UNREFINED_COUNT = 1554;
 

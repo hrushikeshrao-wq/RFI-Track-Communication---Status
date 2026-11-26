@@ -31,7 +31,7 @@ import {
   type NextAsk,
 } from "@/lib/simulation";
 import { syncableQuestionIds } from "@/lib/filter-sync";
-import { INITIAL_SPEC, matchCount, type SpecId, type SpecState } from "@/lib/spec";
+import { EMPTY_SPEC, INITIAL_SPEC, matchCount, type SpecId, type SpecState } from "@/lib/spec";
 import { CATEGORY_LABEL, SEARCH_QUERY } from "@/lib/suppliers";
 import { clearShortlistStore, type ShortlistSnapshot } from "@/lib/shortlist-store";
 
@@ -112,6 +112,10 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
   const resetSpec = useCallback(() => {
     setSearchSaved(false);
     setSpecState(INITIAL_SPEC);
+  }, []);
+  const clearSpec = useCallback(() => {
+    setSearchSaved(false);
+    setSpecState(EMPTY_SPEC);
   }, []);
   /** Deep Drawing hand-off confirm, opened from the process question. */
   const [deepDrawGateOpen, setDeepDrawGateOpen] = useState(false);
@@ -562,12 +566,13 @@ export function SourcingExperience({ children }: { children: React.ReactNode }) 
       spec,
       setSpec,
       resetSpec,
+      clearSpec,
       matchTotal: matchCount(spec),
       searchSaved,
       saveSearch: () => setSearchSaved(true),
       ...shortlist,
     }),
-    [answers, query, runId, removeAnswer, applyFilterAnswer, removeAnswers, openDefine, spec, setSpec, resetSpec, searchSaved, shortlist],
+    [answers, query, runId, removeAnswer, applyFilterAnswer, removeAnswers, openDefine, spec, setSpec, resetSpec, clearSpec, searchSaved, shortlist],
   );
 
   const activeAsk = transcript.find(
