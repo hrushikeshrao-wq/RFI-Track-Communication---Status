@@ -163,6 +163,7 @@ export function useShortlistState(
   );
 
   const clearRecommended = useCallback(() => setCleared(true), []);
+  const clearAdded = useCallback(() => setRailAdded([]), []);
 
   const revealSupplier = useCallback(
     (supplierId: string) => {
@@ -208,6 +209,7 @@ export function useShortlistState(
     toggleAdd,
     removeFromRail,
     clearRecommended,
+    clearAdded,
     revealSupplier,
     pendingRevealId,
     clearPendingReveal,

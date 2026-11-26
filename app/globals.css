@@ -1525,9 +1525,10 @@ body.is-resizing-panes {
 
 .spec-title {
   margin: 0;
-  font-size: 21px;
+  font-family: var(--app-font-display);
+  font-size: 20px;
   font-weight: 600;
-  line-height: 28px;
+  line-height: 26px;
   color: var(--tn-ink);
 }
 
@@ -1607,17 +1608,17 @@ body.is-resizing-panes {
 .spec-chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  min-height: 28px;
-  padding: 4px 8px 4px 10px;
+  gap: 6px;
+  min-height: 22px;
+  padding: 2px 6px 2px 8px;
   border: none;
-  border-radius: 6px;
+  border-radius: 4px;
   background: var(--tn-blue-soft);
   box-shadow: none;
   color: var(--tn-blue);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 20px;
+  line-height: 16px;
 }
 
 .spec-chip-divider {
@@ -2312,6 +2313,39 @@ body.is-resizing-panes {
   overflow-y: auto;
 }
 
+.pane-scroll,
+.smart-rail-body,
+.qc-body,
+.drawer-body {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(9 44 71 / 0.28) transparent;
+}
+
+.pane-scroll::-webkit-scrollbar,
+.smart-rail-body::-webkit-scrollbar,
+.qc-body::-webkit-scrollbar,
+.drawer-body::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.pane-scroll::-webkit-scrollbar-track,
+.smart-rail-body::-webkit-scrollbar-track,
+.qc-body::-webkit-scrollbar-track,
+.drawer-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.pane-scroll::-webkit-scrollbar-thumb,
+.smart-rail-body::-webkit-scrollbar-thumb,
+.qc-body::-webkit-scrollbar-thumb,
+.drawer-body::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 999px;
+  background: rgb(9 44 71 / 0.28);
+  background-clip: padding-box;
+}
+
 .results-center .pane-scroll {
   padding-bottom: var(--l-space-4);
 }
@@ -3001,9 +3035,10 @@ body.is-resizing-panes {
 
 .smart-rail-head h2 {
   margin: 0;
-  font-size: 16px;
+  font-family: var(--app-font-display);
+  font-size: 15px;
   font-weight: 600;
-  line-height: 24px;
+  line-height: 20px;
   color: var(--tn-ink);
 }
 
@@ -3140,28 +3175,31 @@ body.is-resizing-panes {
 
 .smart-rail-foot {
   flex-shrink: 0;
-  padding: 16px;
+  padding: 18px 14px 16px;
   border-top: 1px solid var(--tn-line);
   background: #fff;
 }
 
-.smart-matched {
-  margin-bottom: 12px;
+.smart-rail-foot .smart-matched {
+  margin: 0 0 16px;
   text-align: center;
-  font-size: 16px;
+  font-family: var(--app-font-display);
+  font-size: 15px;
   font-weight: 600;
-  line-height: 24px;
+  line-height: 20px;
   color: var(--tn-blue);
 }
 
 .smart-rail-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
 }
 
 .smart-rail-actions > .smart-icon-btn:first-child {
-  width: 28px;
+  width: 22px;
+  min-height: 40px;
+  padding: 0;
   border: none;
   background: transparent;
 }
@@ -3169,13 +3207,13 @@ body.is-resizing-panes {
 .smart-icon-btn,
 .smart-reset,
 .smart-done {
-  height: auto;
-  padding: 4px 12px;
-  border-radius: 3px;
+  min-height: 40px;
+  padding: 8px 12px;
+  border-radius: 6px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 600;
-  line-height: 24px;
+  line-height: 20px;
   cursor: pointer;
 }
 
@@ -3183,8 +3221,9 @@ body.is-resizing-panes {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
+  width: 40px;
   flex-shrink: 0;
+  padding: 0;
   border: 1px solid var(--tn-outline);
   background: #fff;
   color: var(--tn-ink);
@@ -3908,13 +3947,13 @@ body.is-resizing-panes {
   cursor: default;
 }
 
-/* Results list: separated white cards on the gray page background. */
+/* Results list: white cards on a white column. */
 .results-list {
   display: flex;
   flex-direction: column;
   gap: 16px;
   padding: 16px 16px 40px;
-  background: var(--tn-page);
+  background: #fff;
 }
 
 /* Rows that read across the full width whatever the card layout. */
@@ -4197,16 +4236,16 @@ body.is-resizing-panes {
 
 .card-foot .cap-pill {
   height: auto;
-  min-height: 39px;
-  padding: 8px 12px;
-  font-size: 13px;
+  min-height: 26px;
+  padding: 2px 8px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 20px;
+  line-height: 18px;
   gap: 4px;
 }
 
 .card-foot .cap-pill l-icon {
-  font-size: 13px;
+  font-size: 11px;
   color: var(--tn-check);
 }
 
@@ -4326,26 +4365,26 @@ l-icon[name="envelope"]::before {
   align-items: center;
   gap: 4px;
   height: auto;
-  min-height: 39px;
-  padding: 8px 12px;
+  min-height: 26px;
+  padding: 2px 8px;
   background: transparent;
   border: 1px solid var(--tn-line);
   border-radius: 100px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  line-height: 20px;
+  line-height: 18px;
   color: var(--tn-ink);
 }
 
 .cap-pill l-icon {
   color: var(--tn-check);
-  font-size: 13px;
+  font-size: 11px;
 }
 
 /* Single-line capability row: wrapped pills are clipped and counted in +X. */
 .cap-row {
-  --cap-pill-height: 39px;
+  --cap-pill-height: 26px;
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -5949,9 +5988,10 @@ l-icon[name="envelope"]::before {
 
 .qc-head h2 {
   margin: 0;
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
+  font-family: var(--app-font-display);
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 20px;
   color: #0d2c48;
 }
 

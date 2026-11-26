@@ -31,6 +31,7 @@ export type SourcingContextValue = {
   toggleAdd: (supplier: Supplier) => void;
   removeFromRail: (supplierId: string) => void;
   clearRecommended: () => void;
+  clearAdded: () => void;
   revealSupplier: (supplierId: string) => void;
   pendingRevealId: string | null;
   clearPendingReveal: () => void;

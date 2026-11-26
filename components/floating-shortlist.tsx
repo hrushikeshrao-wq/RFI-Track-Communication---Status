@@ -17,6 +17,7 @@ export function FloatingShortlist() {
     requirements,
     removeFromRail,
     clearRecommended,
+    clearAdded,
     revealSupplier,
     openDefine,
   } = useSourcing();
@@ -67,6 +68,9 @@ export function FloatingShortlist() {
             <>
               <div className="qc-section">
                 <span>Added by you</span>
+                <button type="button" onClick={clearAdded}>
+                  Clear
+                </button>
               </div>
               <ul className="qc-list">{added.map(chip)}</ul>
             </>

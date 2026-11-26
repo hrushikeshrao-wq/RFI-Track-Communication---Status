@@ -101,7 +101,7 @@ export function SmartFilterRail({ onDone }: { onDone: () => void }) {
       </div>
 
       <footer className="smart-rail-foot">
-        <p className="smart-matched mar-0">{matchTotal.toLocaleString()} Suppliers Matched!</p>
+        <p className="smart-matched">{matchTotal.toLocaleString()} Suppliers Matched!</p>
         <div className="smart-rail-actions">
           <button type="button" className="smart-icon-btn" aria-label="Previous question" onClick={back}>
             <l-icon name="angle-left" aria-hidden="true" />
